@@ -9,7 +9,7 @@ dotenv.config();
 //--------route declarations------//
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var pagePlaceRouter = require('./routes/page_place');
+var pagePlacesRouter = require('./routes/page_place');
 //--------------------------------//
 
 var app = express();
@@ -28,7 +28,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 // //--------routes------------//
-app.use('/api/pagePlaces', pagePlaceRouter);
+app.use('/api/pagePlaces', pagePlacesRouter);
+app.use('/api/users', usersRouter);
 // //---------------------------//
 
 // catch 404 and forward to error handler

@@ -6,8 +6,11 @@ var logger = require('morgan');
 var dotenv = require("dotenv");
 dotenv.config();
 
+//--------route declarations------//
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var pagePlaceRouter = require('./routes/page_place');
+//--------------------------------//
 
 var app = express();
 
@@ -23,12 +26,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-// app.use(express.static(__dirname + '/dist/dreamjobs4u-fe'));
 
-// app.get('/*', function(req,res) {
-    
-// res.sendFile(path.join(__dirname+'/dist/dreamjobs4u-fe/index.html'));
-// });
+// //--------routes------------//
+app.use('/api/pagePlaces', pagePlaceRouter);
+// //---------------------------//
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

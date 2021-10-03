@@ -54,12 +54,12 @@ router.post('/', async(req, res)=>{
   }
 });
 
-router.put('/:key', async(req, res)=>{
-  var param_key = req.params.key;
-  console.log(req.params.key)
+router.put('/:id', async(req, res)=>{
+  var param_id = req.params.id;
+  console.log(req.params.id)
   try {
     var pagePlaceRow = await PagePlace.findOne({ 
-      where: { key: param_key },
+      where: { id: param_id },
     });
 
     if (pagePlaceRow) {

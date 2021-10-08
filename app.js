@@ -11,6 +11,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var pagePlacesRouter = require('./routes/page_places');
 var publicContentsRouter = require('./routes/public_contents');
+var publicContentTranslationsRouter = require('./routes/public_content_translations');
 var languagesRouter = require('./routes/languages');
 var languageTranslationsRouter = require('./routes/language_translations');
 //--------------------------------//
@@ -36,6 +37,7 @@ app.use('/', indexRouter);
 app.use('/api/pagePlaces', pagePlacesRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/publicContents', publicContentsRouter);
+app.use('/api/publicContentTranslations', publicContentTranslationsRouter);
 app.use('/api/languages', languagesRouter);
 app.use('/api/languageTranslations', languageTranslationsRouter);
 // //---------------------------//

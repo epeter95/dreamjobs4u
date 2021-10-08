@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { PublicContentTranslation } = require('../db/models');
+const { PublicContentTranslation, PublicContent, Language } = require('../db/models');
 // const JWTManager = require('../classes/jwt_manager');
 
 // router.get('/', JWTManager.verifyServiceToken, async(req, res) => {
@@ -16,7 +16,9 @@ const { PublicContentTranslation } = require('../db/models');
 
 router.get('/', async (req, res) => {
     try {
-        const data = await PublicContentTranslation.findAll({});
+        const data = await PublicContentTranslation.findAll({
+            include: [PublicContent,Language]
+        });
         return res.send(data);
     } catch (error) {
         console.log(error);

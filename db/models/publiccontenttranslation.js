@@ -18,6 +18,15 @@ module.exports = (sequelize, DataTypes) => {
       PublicContentTranslation.belongsTo(models.PublicContent, {
         foreignKey: 'publicContentId',
       });
+
+      models.Language.hasMany(PublicContentTranslation, {
+        foreignKey: 'languageId',
+        onDelete: 'RESTRICT',
+        onUpdate: 'RESTRICT'
+      });
+      PublicContentTranslation.belongsTo(models.Language, {
+        foreignKey: 'languageId',
+      });
     }
   };
   PublicContentTranslation.init({

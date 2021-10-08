@@ -17,7 +17,7 @@ const { PublicContent, PagePlace } = require('../db/models');
 router.get('/', async (req, res) => {
   try {
     const data = await PublicContent.findAll({
-      include: PagePlace
+      include: {model: PagePlace, required: true}
     });
     return res.send(data);
   } catch (error) {

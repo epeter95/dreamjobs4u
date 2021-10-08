@@ -46,7 +46,7 @@ router.post('/', async (req, res) => {
     try {
         const { key, active, adminName, name } = req.body;
         const data = await Language.create({ key, adminName, active });
-        const hunLanguage = await Language.findOne({ where: { key: 'hun' } });
+        const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         const translationData = await LanguageTranslation.create({ languageElementId: data.id, languageId: hunLanguage.id, name });
         return res.send({ ok: 'siker' });
     } catch (error) {

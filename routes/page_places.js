@@ -42,10 +42,8 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const data = await PagePlace.create({
-      key: req.body.key,
-      name: req.body.name
-    });
+    const { key, adminName } = req.body;
+    const data = await PagePlace.create({key, adminName});
 
     return res.send({ ok: 'siker' });
   } catch (error) {
@@ -57,8 +55,8 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   const paramId = req.params.id;
   try {
-    const { name } = req.body;
-    const data = await PagePlace.update({ name }, {
+    const { adminName } = req.body;
+    const data = await PagePlace.update({ adminName }, {
       where: { id: paramId },
     });
 

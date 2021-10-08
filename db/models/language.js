@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true
     },
+    adminName: DataTypes.STRING,
     active: DataTypes.BOOLEAN
   }, {
     sequelize,

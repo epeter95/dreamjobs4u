@@ -62,7 +62,7 @@ router.put('/:id', async (req, res) => {
   try {
     const { firstName, lastName, email, password, role } = req.body;
     const hashedPassword = await hashPassword(password);
-    const userRow = await User.update({ firstName, lastName, email, hashedPassword, role }, {
+    const data = await User.update({ firstName, lastName, email, hashedPassword, role }, {
       where: { id: paramId },
     });
 

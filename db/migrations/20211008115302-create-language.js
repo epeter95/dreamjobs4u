@@ -13,6 +13,7 @@ module.exports = {
         allowNull: false,
         unique: true
       },
+      adminName: Sequelize.STRING,
       active: {
         type: Sequelize.BOOLEAN,
         defaultValue: false

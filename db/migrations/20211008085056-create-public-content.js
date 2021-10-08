@@ -44,6 +44,7 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
+    await queryInterface.removeConstraint('public_contents', 'public_contents_page_place_id_fk');
     await queryInterface.dropTable('public_contents');
   }
 };

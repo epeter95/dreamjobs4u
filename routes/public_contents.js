@@ -60,7 +60,7 @@ router.put('/:id', async (req, res) => {
   const paramId = req.params.id;
   try {
     const { key, name, pagePlaceID, link } = req.body;
-    const publicContentRow = await PublicContent.update({ key, name, pagePlaceID, link }, {
+    const data = await PublicContent.update({ key, name, pagePlaceID, link }, {
       where: { id: paramId },
     });
 

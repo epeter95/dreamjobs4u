@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Language, LanguageTranslation } = require('../db/models');
+const { LanguageTranslation } = require('../db/models');
 // const JWTManager = require('../classes/jwt_manager');
 
 // router.get('/', JWTManager.verifyServiceToken, async(req, res) => {
@@ -16,9 +16,7 @@ const { Language, LanguageTranslation } = require('../db/models');
 
 router.get('/', async (req, res) => {
     try {
-        const data = await Language.findAll({
-            include: LanguageTranslation
-        });
+        const data = await LanguageTranslation.findAll({});
         return res.send(data);
     } catch (error) {
         console.log(error);
@@ -31,7 +29,7 @@ router.get('/:id', async (req, res) => {
     try {
         let data;
         if (paramId) {
-            data = await Language.findOne({
+            data = await LanguageTranslation.findOne({
                 where: { id: paramId },
             });
         }
@@ -44,10 +42,8 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
-        const { key, active, adminName, name } = req.body;
-        const data = await Language.create({ key, adminName, active });
-        const hunLanguage = await Language.findOne({ where: { key: 'hun' } });
-        const translationData = await LanguageTranslation.create({ languageElementId: data.id, languageId: hunLanguage.id, name });
+        const { languageElementId, languageId, name } = req.body;
+        const data = await LanguageTranslation.create({ languageElementId, languageId, name });
         return res.send({ ok: 'siker' });
     } catch (error) {
         console.log(error);
@@ -58,8 +54,8 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const paramId = req.params.id;
     try {
-        const { key, adminName, active } = req.body;
-        const data = await Language.update({ key, adminName, active }, {
+        const { languageElementId, languageId, name } = req.body;
+        const data = await LanguageTranslation.update({ languageElementId, languageId, name }, {
             where: { id: paramId },
         });
 
@@ -73,7 +69,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const paramId = req.params.id;
     try {
-        const data = await Language.destroy({
+        const data = await LanguageTranslation.destroy({
             where: { id: paramId }
         });
     } catch (error) {

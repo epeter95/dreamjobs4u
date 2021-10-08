@@ -14,10 +14,15 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   PagePlace.init({
-    key: { type: DataTypes.STRING, allowNull: false, unique: true },
+    key: { 
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
+    },
     name: DataTypes.STRING
   }, {
     sequelize,
+    tableName: 'page_places',
     modelName: 'PagePlace',
   });
   return PagePlace;

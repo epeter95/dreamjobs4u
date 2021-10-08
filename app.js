@@ -9,7 +9,8 @@ dotenv.config();
 //--------route declarations------//
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var pagePlacesRouter = require('./routes/page_place');
+var pagePlacesRouter = require('./routes/page_places');
+var publicContentsRouter = require('./routes/public_contents');
 //--------------------------------//
 
 var app = express();
@@ -25,11 +26,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 
 // //--------routes------------//
 app.use('/api/pagePlaces', pagePlacesRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/publicContents', publicContentsRouter);
 // //---------------------------//
 
 // catch 404 and forward to error handler

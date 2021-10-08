@@ -31,6 +31,17 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
+    await queryInterface.addConstraint('public_contents', {
+      fields: ['pagePlaceId'],
+      type: 'foreign key',
+      name: 'public_contents_page_place_id_fk',
+      references: {
+        table: 'page_places',
+        field: 'id'
+      },
+      onDelete: 'cascade',
+      onUpdate: 'cascade'
+    });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('public_contents');

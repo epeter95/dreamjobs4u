@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-const {User} = require('../db/models');
+const express = require('express');
+const router = express.Router();
+const { User } = require('../db/models');
 const bcrypt = require('bcrypt');
 // const JWTManager = require('../classes/jwt_manager');
 
@@ -15,41 +15,41 @@ const bcrypt = require('bcrypt');
 //   }
 // });
 
-router.get('/', async(req, res) => {
-    try{
-      const data = await User.findAll({});
-      return res.send(data);
-    }catch(error){
-      console.log(error);
-      return res.send({error: error.name});
-    }
-  });
-
-router.get('/:id', async(req, res) => {
-  var param_id = req.params.id;
-  var data;
-  try{
-    if(param_id){
-      data = await User.findOne({ 
-        where: { id: param_id },
-      });
-    }
+router.get('/', async (req, res) => {
+  try {
+    const data = await User.findAll({});
     return res.send(data);
-  }catch(error){
+  } catch (error) {
     console.log(error);
-    return res.send({error: error.name});
+    return res.send({ error: error.name });
   }
 });
 
-router.post('/', async(req, res)=>{
-  try{
-    const { firstName, lastName, email, password, role} = req.body;
-    const hashedPassword = await hashPassword(password);
-    const data = await User.create({firstName, lastName, email, password: hashedPassword, role: role || 'basic'});
-    return res.send({ok: 'siker'});
-  } catch(error) {
+router.get('/:id', async (req, res) => {
+  const paramId = req.params.id;
+  try {
+    let data;
+    if (paramId) {
+      data = await User.findOne({
+        where: { id: paramId },
+      });
+    }
+    return res.send(data);
+  } catch (error) {
     console.log(error);
-    return res.send({error: error.name});
+    return res.send({ error: error.name });
+  }
+});
+
+router.post('/', async (req, res) => {
+  try {
+    const { firstName, lastName, email, password, role } = req.body;
+    const hashedPassword = await hashPassword(password);
+    const data = await User.create({ firstName, lastName, email, password: hashedPassword, role: role || 'basic' });
+    return res.send({ ok: 'siker' });
+  } catch (error) {
+    console.log(error);
+    return res.send({ error: error.name });
   }
 });
 
@@ -57,33 +57,33 @@ async function hashPassword(password) {
   return await bcrypt.hash(password, 10);
 }
 
-router.put('/:id', async(req, res)=>{
-  var param_id = req.params.id;
+router.put('/:id', async (req, res) => {
+  const paramId = req.params.id;
   try {
-    const { firstName, lastName, email, password, role} = req.body;
+    const { firstName, lastName, email, password, role } = req.body;
     const hashedPassword = await hashPassword(password);
-    const userRow = await User.update({firstName, lastName, email, hashedPassword, role},{ 
-      where: { id: param_id },
+    const userRow = await User.update({ firstName, lastName, email, hashedPassword, role }, {
+      where: { id: paramId },
     });
 
-    return res.send({ok: 'siker'});
-  }catch(error){
+    return res.send({ ok: 'siker' });
+  } catch (error) {
     console.log(error);
-    return res.send({error: error.name});
-  }  
+    return res.send({ error: error.name });
+  }
 });
 
-router.delete('/:id', async(req, res)=>{
-  var param_id = req.params.id;
-  try{
+router.delete('/:id', async (req, res) => {
+  const paramId = req.params.id;
+  try {
     const data = await User.destroy({
-      where: { id: param_id } 
+      where: { id: paramId }
     });
-  }catch(error){
+  } catch (error) {
     console.log(error);
-    return res.send({error: error.name});
+    return res.send({ error: error.name });
   }
-  return res.send({ok: 'siker'});
+  return res.send({ ok: 'siker' });
 });
 
 module.exports = router;

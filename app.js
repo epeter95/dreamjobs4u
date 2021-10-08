@@ -11,6 +11,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var pagePlacesRouter = require('./routes/page_places');
 var publicContentsRouter = require('./routes/public_contents');
+var languagesRouter = require('./routes/languages');
 //--------------------------------//
 
 var app = express();
@@ -31,6 +32,7 @@ app.use('/', indexRouter);
 app.use('/api/pagePlaces', pagePlacesRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/publicContents', publicContentsRouter);
+app.use('/api/languages', languagesRouter);
 // //---------------------------//
 
 // catch 404 and forward to error handler

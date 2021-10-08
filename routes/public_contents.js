@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const { PublicContent, PagePlace } = require('../db/models');
 // const JWTManager = require('../classes/jwt_manager');
 
@@ -17,7 +17,7 @@ const { PublicContent, PagePlace } = require('../db/models');
 router.get('/', async (req, res) => {
   try {
     const data = await PublicContent.findAll({
-      include: {model: PagePlace, required: true}
+      include: { model: PagePlace, required: true }
     });
     return res.send(data);
   } catch (error) {
@@ -27,12 +27,12 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-  const param_id = req.params.id;
-  var data;
+  const paramId = req.params.id;
   try {
-    if (param_id) {
+    let data;
+    if (paramId) {
       data = await PublicContent.findOne({
-        where: { id: param_id },
+        where: { id: paramId },
         include: [
           PagePlace
         ]
@@ -57,11 +57,11 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-  var param_id = req.params.id;
+  const paramId = req.params.id;
   try {
     const { key, name, pagePlaceID, link } = req.body;
-    const publicContentRow = await PublicContent.update({ key, name,pagePlaceID, link }, {
-      where: { id: param_id },
+    const publicContentRow = await PublicContent.update({ key, name, pagePlaceID, link }, {
+      where: { id: paramId },
     });
 
     return res.send({ ok: 'siker' });
@@ -72,10 +72,10 @@ router.put('/:id', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
-  var param_id = req.params.id;
+  const paramId = req.params.id;
   try {
     const data = await PublicContent.destroy({
-      where: { id: param_id }
+      where: { id: paramId }
     });
   } catch (error) {
     console.log(error);

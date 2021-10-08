@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true
     },
-    name: DataTypes.STRING,
+    adminName: DataTypes.STRING,
     pagePlaceId: DataTypes.INTEGER,
     link: DataTypes.STRING
   }, {

@@ -44,6 +44,7 @@ module.exports = {
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.removeConstraint('language_translations', 'language_translations_language_id_fk');
+    await queryInterface.removeIndex('language_translations', 'language_translations_language_element_id_language_id_unique');
     await queryInterface.dropTable('language_translations');
   }
 };

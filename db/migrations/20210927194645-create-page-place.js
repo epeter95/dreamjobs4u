@@ -13,7 +13,7 @@ module.exports = {
         unique: true,
         allowNull: false
       },
-      name: {
+      adminName: {
         type: Sequelize.STRING
       },
       createdAt: {

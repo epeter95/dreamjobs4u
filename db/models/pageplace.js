@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true
     },
-    name: DataTypes.STRING
+    adminName: DataTypes.STRING
   }, {
     sequelize,
     tableName: 'page_places',

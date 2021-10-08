@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { PublicContent, PagePlace } = require('../db/models');
+const { PublicContent, PagePlace, Language, PublicContentTranslation } = require('../db/models');
 // const JWTManager = require('../classes/jwt_manager');
 
 // router.get('/', JWTManager.verifyServiceToken, async(req, res) => {
@@ -47,8 +47,10 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { key, name, pagePlaceId, link } = req.body;
-    const data = await PublicContent.create({ key, name, pagePlaceId, link });
+    const { key, adminName, pagePlaceId, link, title } = req.body;
+    const data = await PublicContent.create({ key, adminName, pagePlaceId, link });
+    const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
+    const translationData = await PublicContentTranslation.create({ publicContentId: data.id, languageId: hunLanguage.id, title });
     return res.send({ ok: 'siker' });
   } catch (error) {
     console.log(error);
@@ -59,8 +61,8 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   const paramId = req.params.id;
   try {
-    const { key, name, pagePlaceID, link } = req.body;
-    const data = await PublicContent.update({ key, name, pagePlaceID, link }, {
+    const { key, adminName, pagePlaceId, link } = req.body;
+    const data = await PublicContent.update({ key, adminName, pagePlaceId, link }, {
       where: { id: paramId },
     });
 

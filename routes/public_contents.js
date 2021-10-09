@@ -1,20 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { PublicContent, PagePlace, Language, PublicContentTranslation } = require('../db/models');
-// const JWTManager = require('../classes/jwt_manager');
+const JWTManager = require('../middlewares/jwt_manager');
 
-// router.get('/', JWTManager.verifyServiceToken, async(req, res) => {
-//   try{
-//     const data = await PagePlace.findAll({
-//     });
-//     return res.send(data);
-//   }catch(error){
-//     console.log(error);
-//     return res.send({error: error.name});
-//   }
-// });
-
-router.get('/', async (req, res) => {
+router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const data = await PublicContent.findAll({
       include: { model: PagePlace, required: true }
@@ -26,7 +15,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
     let data;
@@ -45,7 +34,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const { key, adminName, pagePlaceId, link, title } = req.body;
     const data = await PublicContent.create({ key, adminName, pagePlaceId, link });
@@ -58,7 +47,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
     const { key, adminName, pagePlaceId, link } = req.body;
@@ -73,7 +62,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
     const data = await PublicContent.destroy({

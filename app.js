@@ -14,6 +14,7 @@ var publicContentsRouter = require('./routes/public_contents');
 var publicContentTranslationsRouter = require('./routes/public_content_translations');
 var languagesRouter = require('./routes/languages');
 var languageTranslationsRouter = require('./routes/language_translations');
+var authenticationRouter = require('./routes/authentication');
 //--------------------------------//
 
 var app = express();
@@ -40,6 +41,7 @@ app.use('/api/publicContents', publicContentsRouter);
 app.use('/api/publicContentTranslations', publicContentTranslationsRouter);
 app.use('/api/languages', languagesRouter);
 app.use('/api/languageTranslations', languageTranslationsRouter);
+app.use('/api/auth', authenticationRouter);
 // //---------------------------//
 
 // catch 404 and forward to error handler

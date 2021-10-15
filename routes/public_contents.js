@@ -6,7 +6,7 @@ const JWTManager = require('../middlewares/jwt_manager');
 router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const data = await PublicContent.findAll({
-      include: { model: PagePlace, required: true }
+      include: [PagePlace, PublicContentTranslation]
     });
     return res.send(data);
   } catch (error) {
@@ -73,6 +73,24 @@ router.delete('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
   return res.send({ ok: 'siker' });
+});
+
+router.get('/getByPagePlaceKey/:key', JWTManager.verifyAdminUser,  async(req, res) => {
+  var pagePlaceKeyParam = req.params.key;
+  try {
+    let result = new Array();
+    if (pagePlaceKeyParam) {
+      result = await PublicContent.findAll({
+        include: [
+          { model: PagePlace, where: { key: pagePlaceKeyParam } }
+        ],
+      });
+    }
+    return res.send(result);
+  } catch(error) {
+    console.log(error);
+    return res.send({error: error.name});
+  }
 });
 
 module.exports = router;

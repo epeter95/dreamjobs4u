@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { Role } = require('../db/models');
+const { Role, RoleTranslation } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 
 router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
   try {
-    const data = await Role.findAll({});
+    const data = await Role.findAll({include: RoleTranslation});
     return res.send(data);
   } catch (error) {
     console.log(error);
@@ -20,6 +20,7 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     if (paramId) {
       data = await Role.findOne({
         where: { id: paramId },
+        include: RoleTranslation
       });
     }
     return res.send(data);

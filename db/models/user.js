@@ -10,7 +10,14 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      models.Role.hasMany(User, {
+        foreignKey: 'roleId',
+        onDelete: 'RESTRICT',
+        onUpdate: 'RESTRICT'
+      });
+      User.belongsTo(models.Role, {
+        foreignKey: 'roleId',
+      });
     }
   };
   User.init({
@@ -21,9 +28,8 @@ module.exports = (sequelize, DataTypes) => {
       unique: true
     },
     password: DataTypes.STRING,
-    role: {
-      type: DataTypes.STRING,
-      default: 'basic'
+    roleId: {
+      type: DataTypes.INTEGER,
     }
   }, {
     sequelize,

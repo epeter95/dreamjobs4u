@@ -13,6 +13,7 @@ var pagePlacesRouter = require('./routes/page_places');
 var publicContentsRouter = require('./routes/public_contents');
 var publicContentTranslationsRouter = require('./routes/public_content_translations');
 var languagesRouter = require('./routes/languages');
+var rolesRouter = require('./routes/roles');
 var languageTranslationsRouter = require('./routes/language_translations');
 var authenticationRouter = require('./routes/authentication');
 //--------------------------------//
@@ -42,6 +43,7 @@ app.use('/api/publicContentTranslations', publicContentTranslationsRouter);
 app.use('/api/languages', languagesRouter);
 app.use('/api/languageTranslations', languageTranslationsRouter);
 app.use('/api/auth', authenticationRouter);
+app.use('/api/roles', rolesRouter);
 // //---------------------------//
 
 // catch 404 and forward to error handler

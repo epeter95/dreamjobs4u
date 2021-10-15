@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { User, Role } = require('../db/models');
-const bcrypt = require('bcrypt');
+const { Role } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 
 router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
   try {
-    const data = await User.findAll({include: Role});
+    const data = await Role.findAll({});
     return res.send(data);
   } catch (error) {
     console.log(error);
@@ -19,9 +18,8 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   try {
     let data;
     if (paramId) {
-      data = await User.findOne({
+      data = await Role.findOne({
         where: { id: paramId },
-        include: Role
       });
     }
     return res.send(data);
@@ -33,9 +31,8 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
 
 router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
   try {
-    const { firstName, lastName, email, password, roleId } = req.body;
-    const hashedPassword = await hashPassword(password);
-    const data = await User.create({ firstName, lastName, email, password: hashedPassword, roleId });
+    const { key, adminName } = req.body;
+    const data = await Role.create({ key, adminName });
     return res.send({ ok: 'siker' });
   } catch (error) {
     console.log(error);
@@ -43,16 +40,11 @@ router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
   }
 });
 
-async function hashPassword(password) {
-  return await bcrypt.hash(password, 10);
-}
-
 router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
-    const { firstName, lastName, email, password, roleId } = req.body;
-    const hashedPassword = await hashPassword(password);
-    const data = await User.update({ firstName, lastName, email, hashedPassword, roleId }, {
+    const { key, adminName } = req.body;
+    const data = await Role.update({ key, adminName }, {
       where: { id: paramId },
     });
 
@@ -66,7 +58,7 @@ router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
 router.delete('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
-    const data = await User.destroy({
+    const data = await Role.destroy({
       where: { id: paramId }
     });
   } catch (error) {

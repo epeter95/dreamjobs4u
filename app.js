@@ -17,6 +17,10 @@ var rolesRouter = require('./routes/roles');
 var languageTranslationsRouter = require('./routes/language_translations');
 var authenticationRouter = require('./routes/authentication');
 var roleTranslationsRouter = require('./routes/role_translations');
+var generalMessagesRouter = require('./routes/general_messages');
+var generalMessageTranslationsRouter = require('./routes/general_message_translations');
+var errorMessagesRouter = require('./routes/error_messages');
+var errorMessageTranslationsRouter = require('./routes/error_message_translations');
 //--------------------------------//
 
 var app = express();
@@ -46,6 +50,10 @@ app.use('/api/languageTranslations', languageTranslationsRouter);
 app.use('/api/auth', authenticationRouter);
 app.use('/api/roles', rolesRouter);
 app.use('/api/roleTranslations', roleTranslationsRouter);
+app.use('/api/errorMessages', errorMessagesRouter);
+app.use('/api/errorMessageTranslations', errorMessageTranslationsRouter);
+app.use('/api/generalMessages', generalMessagesRouter);
+app.use('/api/generalMessageTranslations', generalMessageTranslationsRouter);
 // //---------------------------//
 
 // catch 404 and forward to error handler

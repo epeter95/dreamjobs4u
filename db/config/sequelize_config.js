@@ -12,6 +12,7 @@ module.exports = {
     dialectOptions: {
       bigNumberStrings: true
     },
+    logging: false,
     minifyAliases: true,
     pool: {
       max: 300,

@@ -33,8 +33,8 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
 
 router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
     try {
-        const { GeneralMessageId, languageId, text } = req.body;
-        const data = await GeneralMessageTranslation.create({ GeneralMessageId, languageId, text });
+        const { generalMessageId, languageId, text } = req.body;
+        const data = await GeneralMessageTranslation.create({ generalMessageId, languageId, text });
         return res.send({ ok: 'siker' });
     } catch (error) {
         console.log(error);
@@ -45,8 +45,8 @@ router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
 router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
-        const { GeneralMessageId, languageId, text } = req.body;
-        const data = await GeneralMessageTranslation.update({ GeneralMessageId, languageId, text }, {
+        const { generalMessageId, languageId, text } = req.body;
+        const data = await GeneralMessageTranslation.update({ generalMessageId, languageId, text }, {
             where: { id: paramId },
         });
 

@@ -2,10 +2,18 @@ const express = require('express');
 const router = express.Router();
 const { Role, RoleTranslation } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
+const { Op } = require("sequelize");
 
-router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
+router.get('/public', async (req, res) => {
   try {
-    const data = await Role.findAll({include: RoleTranslation});
+    const data = await Role.findAll({
+      where: {
+        [Op.or]: [
+          { key: 'employee' },
+          { key: 'employer' }
+        ]
+      }, include: RoleTranslation
+    });
     return res.send(data);
   } catch (error) {
     console.log(error);
@@ -13,7 +21,17 @@ router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
   }
 });
 
-router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
+router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
+  try {
+    const data = await Role.findAll({ include: RoleTranslation });
+    return res.send(data);
+  } catch (error) {
+    console.log(error);
+    return res.send({ error: error.name });
+  }
+});
+
+router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
     let data;
@@ -30,7 +48,7 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   }
 });
 
-router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
+router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const { key, adminName } = req.body;
     const data = await Role.create({ key, adminName });
@@ -41,7 +59,7 @@ router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
   }
 });
 
-router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
+router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
     const { key, adminName } = req.body;
@@ -56,7 +74,7 @@ router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   }
 });
 
-router.delete('/:id',JWTManager.verifyAdminUser, async (req, res) => {
+router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
     const data = await Role.destroy({

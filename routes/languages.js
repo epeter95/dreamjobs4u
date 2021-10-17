@@ -3,6 +3,18 @@ const router = express.Router();
 const { Language, LanguageTranslation } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 
+router.get('/public', async (req, res) => {
+    try {
+        const data = await Language.findAll({
+            include: LanguageTranslation
+        });
+        return res.send(data);
+    } catch (error) {
+        console.log(error);
+        return res.send({ error: error.name });
+    }
+});
+
 router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const data = await Language.findAll({

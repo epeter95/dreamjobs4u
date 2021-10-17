@@ -93,4 +93,23 @@ router.get('/getByPagePlaceKey/:key', JWTManager.verifyAdminUser,  async(req, re
   }
 });
 
+router.get('/getByPagePlaceKey/:key/public',  async(req, res) => {
+  var pagePlaceKeyParam = req.params.key;
+  try {
+    let result = new Array();
+    if (pagePlaceKeyParam) {
+      result = await PublicContent.findAll({
+        include: [
+          { model: PagePlace, where: { key: pagePlaceKeyParam } },
+          PublicContentTranslation
+        ],
+      });
+    }
+    return res.send(result);
+  } catch(error) {
+    console.log(error);
+    return res.send({error: error.name});
+  }
+});
+
 module.exports = router;

@@ -2,17 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { ErrorMessage, ErrorMessageTranslation, Language } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
-const { Op } = require("sequelize");
 
 router.get('/public', async (req, res) => {
   try {
     const data = await ErrorMessage.findAll({
-      where: {
-        [Op.or]: [
-          { key: 'employee' },
-          { key: 'employer' }
-        ]
-      }, include: ErrorMessageTranslation
+      include: ErrorMessageTranslation
     });
     return res.send(data);
   } catch (error) {

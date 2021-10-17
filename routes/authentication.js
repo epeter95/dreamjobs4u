@@ -9,6 +9,18 @@ async function hashPassword(password) {
   return await bcrypt.hash(password, 10);
 }
 
+router.post('/register', async (req, res) => {
+    try {
+        const { firstName, lastName, email, password, roleId } = req.body;
+        const hashedPassword = await hashPassword(password);
+        const data = await User.create({ firstName, lastName, email, password: hashedPassword, roleId });
+        return res.send({ ok: 'siker' });
+      } catch (error) {
+        console.log(error);
+        return res.send({ error: error.name });
+      }
+});
+
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;

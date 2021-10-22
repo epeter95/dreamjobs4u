@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User } = require('../db/models');
+const { User, Profile } = require('../db/models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
@@ -58,7 +58,12 @@ router.post('/login/public', async (req, res) => {
             }
             const privateKey = fs.readFileSync(process.env.JWT_SECRET_KEY, 'utf8');
             const token = jwt.sign({ email: data.email, role: data.role }, privateKey, {algorithm: 'RS256'});
-            return res.send({token: token});
+            let profileData = await Profile.findOne({where:{userId: data.id}});
+            if(!profileData){
+                profileData = await Profile.create({userId: data.id, phone: '', profilePicture: '', cvPath: ''});
+            }
+            const monogram = data.firstName[0]+data.lastName[0];
+            return res.send({token: token, profilePicture: profileData.profilePicture, monogram: monogram});
         }else{
             res.send({error: 'userNotExist'})
         }

@@ -23,6 +23,7 @@ var errorMessagesRouter = require('./routes/error_messages');
 var errorMessageTranslationsRouter = require('./routes/error_message_translations');
 var categoryRouter = require('./routes/categories');
 var categoryTranslationRouter = require('./routes/category_translations');
+var profileRouter = require('./routes/profiles');
 //--------------------------------//
 
 var app = express();
@@ -58,6 +59,7 @@ app.use('/api/generalMessages', generalMessagesRouter);
 app.use('/api/generalMessageTranslations', generalMessageTranslationsRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/categoryTranslations', categoryTranslationRouter);
+app.use('/api/profiles', profileRouter);
 // //---------------------------//
 
 // catch 404 and forward to error handler

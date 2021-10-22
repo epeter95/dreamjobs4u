@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { CategoryTranslations, Category, Language } = require('../db/models');
+const { CategoryTranslation, Category, Language } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 
 router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
     try {
-        const data = await CategoryTranslations.findAll({
+        const data = await CategoryTranslation.findAll({
             include: [Category,Language]
         });
         return res.send(data);
@@ -20,7 +20,7 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     try {
         let data;
         if (paramId) {
-            data = await CategoryTranslations.findOne({
+            data = await CategoryTranslation.findOne({
                 where: { id: paramId },
             });
         }
@@ -34,7 +34,7 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
 router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const { categoryId, languageId, text } = req.body;
-        const data = await CategoryTranslations.create({ categoryId, languageId, text });
+        const data = await CategoryTranslation.create({ categoryId, languageId, text });
         return res.send({ ok: 'siker' });
     } catch (error) {
         console.log(error);
@@ -46,7 +46,7 @@ router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
         const { categoryId, languageId, text } = req.body;
-        const data = await CategoryTranslations.update({ categoryId, languageId, text }, {
+        const data = await CategoryTranslation.update({ categoryId, languageId, text }, {
             where: { id: paramId },
         });
 
@@ -60,7 +60,7 @@ router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
 router.delete('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
-        const data = await CategoryTranslations.destroy({
+        const data = await CategoryTranslation.destroy({
             where: { id: paramId }
         });
     } catch (error) {

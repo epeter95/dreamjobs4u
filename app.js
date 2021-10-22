@@ -21,6 +21,8 @@ var generalMessagesRouter = require('./routes/general_messages');
 var generalMessageTranslationsRouter = require('./routes/general_message_translations');
 var errorMessagesRouter = require('./routes/error_messages');
 var errorMessageTranslationsRouter = require('./routes/error_message_translations');
+var categoryRouter = require('./routes/categories');
+var categoryTranslationRouter = require('./routes/category_translations');
 //--------------------------------//
 
 var app = express();
@@ -54,6 +56,8 @@ app.use('/api/errorMessages', errorMessagesRouter);
 app.use('/api/errorMessageTranslations', errorMessageTranslationsRouter);
 app.use('/api/generalMessages', generalMessagesRouter);
 app.use('/api/generalMessageTranslations', generalMessageTranslationsRouter);
+app.use('/api/categories', categoryRouter);
+app.use('/api/categoryTranslations', categoryTranslationRouter);
 // //---------------------------//
 
 // catch 404 and forward to error handler

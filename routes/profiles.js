@@ -49,7 +49,7 @@ router.post('/public/editProfilePicture', async (req, res) => {
 
     if (req.files && req.files.profilePictureUrl) {
       const fileData = req.files.profilePictureUrl;
-      if (!fs.existsSync('./public/users/profile_pictures/' + directory)) {ű
+      if (!fs.existsSync('./public/users/profile_pictures/' + directory)) {
         console.log("Létrehozná!");
         fs.mkdirSync('./public/users/profile_pictures/' + directory);
       }
@@ -61,6 +61,8 @@ router.post('/public/editProfilePicture', async (req, res) => {
       fs.writeFile(path, fileData.data,{},()=>{
       });
       imageUrlString = directory + '/' +fileData.name;
+    }else{
+      fs.rmdirSync('./public/users/profile_pictures/' + directory, { recursive: true });
     }
     const profileData = await Profile.update({ profilePicture: imageUrlString }, { where: { userId: userData.id } })
     return res.send({ok: 'siker'});

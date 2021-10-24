@@ -22,9 +22,14 @@ router.post('/public/modifyProfileData', async (req, res) => {
   try {
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
     const userData = await User.findOne({where: {email: email}});
-    const { jobTitle, age, currentSalary, expectedSalary, description } = req.body;
-    const profileData = await Profile.update(
-      { jobTitle, age, currentSalary, expectedSalary, description },
+    const {
+      jobTitle, age, currentSalary, expectedSalary, description,
+      country, city, zipcode, phone, address
+    } = req.body;
+    const profileData = await Profile.update({
+      jobTitle, age, currentSalary, expectedSalary, description,
+      country, city, zipcode, phone, address
+    },
       { where: { userId: userData.id },}
     );
     return res.send({ok: 'siker'});

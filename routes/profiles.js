@@ -2,22 +2,32 @@ const express = require('express');
 const router = express.Router();
 const { Profile, User, Role, RoleTranslation } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
-const jwt = require('jsonwebtoken');
-const fs = require('fs');
 
 router.get('/getProfileDataForPublic', async (req, res) => {
   try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (token == null) return res.sendStatus(401);
-    const publicKey = fs.readFileSync(process.env.JWT_SECRET_PUBLIC_KEY);
-    const tokenData = jwt.verify(token, publicKey, { alrogithms: ['RS256'] });
+    const email = JWTManager.getEmailByToken(req.headers['authorization']);
     const userData = await User.findOne({
-      where: {email: tokenData.email},
-      include: [Profile, {model: Role, include: RoleTranslation}],
+      where: { email: email },
+      include: [Profile, { model: Role, include: RoleTranslation }],
       attributes: ['email', 'firstName', 'lastName']
     });
     return res.send(userData);
+  } catch (error) {
+    console.log(error);
+    return res.send({ error: error.name });
+  }
+});
+
+router.post('/public/modifyProfileData', async (req, res) => {
+  try {
+    const email = JWTManager.getEmailByToken(req.headers['authorization']);
+    const userData = await User.findOne({where: {email: email}});
+    const { jobTitle, age, currentSalary, expectedSalary, description } = req.body;
+    const profileData = await Profile.update(
+      { jobTitle, age, currentSalary, expectedSalary, description },
+      { where: { userId: userData.id },}
+    );
+    return res.send({ok: 'siker'});
   } catch (error) {
     console.log(error);
     return res.send({ error: error.name });

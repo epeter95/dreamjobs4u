@@ -9,7 +9,7 @@ class JWTManager {
             const token = authHeader && authHeader.split(' ')[1];
             if (token == null) return res.sendStatus(401);
             const publicKey = fs.readFileSync(process.env.JWT_SECRET_PUBLIC_KEY);
-            jwt.verify(token, publicKey,{alrogithms: ['RS256']}, (err, user) => {
+            jwt.verify(token, publicKey, { alrogithms: ['RS256'] }, (err, user) => {
                 if (err) return res.sendStatus(401);
                 if (user.role != 'admin') return res.sendStatus(403);
                 next();
@@ -18,6 +18,15 @@ class JWTManager {
             console.log(ex);
             return res.send(ex);
         }
+    }
+
+    static getEmailByToken(header) {
+        const authHeader = header;
+        const token = authHeader && authHeader.split(' ')[1];
+        if (token == null) return res.sendStatus(401);
+        const publicKey = fs.readFileSync(process.env.JWT_SECRET_PUBLIC_KEY);
+        const tokenData = jwt.verify(token, publicKey, { alrogithms: ['RS256'] });
+        return tokenData.email;
     }
 }
 

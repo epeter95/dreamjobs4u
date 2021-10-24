@@ -60,7 +60,11 @@ router.post('/login/public', async (req, res) => {
             const token = jwt.sign({ email: data.email, role: data.role }, privateKey, {algorithm: 'RS256'});
             let profileData = await Profile.findOne({where:{userId: data.id}});
             if(!profileData){
-                profileData = await Profile.create({userId: data.id, phone: '', profilePicture: '', cvPath: ''});
+                profileData = await Profile.create({
+                    userId: data.id, phone: '', profilePicture: '', cvPath: '',
+                    jobTitle: '', age: 0, currentSalary: '', expectedSalary: '',
+                    country: '', zipcode: '', city: '', address: '', description: ''
+                });
             }
             const monogram = data.firstName[0]+data.lastName[0];
             return res.send({token: token, profilePicture: profileData.profilePicture, monogram: monogram});

@@ -27,7 +27,16 @@ module.exports = (sequelize, DataTypes) => {
     },
     phone: DataTypes.STRING,
     profilePicture: DataTypes.STRING,
-    cvPath: DataTypes.STRING
+    cvPath: DataTypes.STRING,
+    jobTitle: DataTypes.STRING,
+    country: DataTypes.STRING,
+    zipcode: DataTypes.STRING,
+    age: DataTypes.INTEGER,
+    currentSalary: DataTypes.STRING,
+    expectedSalary: DataTypes.STRING,
+    city: DataTypes.STRING,
+    address: DataTypes.STRING,
+    description: DataTypes.STRING
   }, {
     sequelize,
     tableName: 'profiles',

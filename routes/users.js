@@ -23,7 +23,6 @@ router.get('/getDataForPublic', async (req, res) => {
   }
 });
 
-
 router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const data = await User.findAll({ include: Role });

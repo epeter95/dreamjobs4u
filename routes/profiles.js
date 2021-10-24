@@ -1,7 +1,29 @@
 const express = require('express');
 const router = express.Router();
-const { Profile } = require('../db/models');
+const { Profile, User, Role, RoleTranslation } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
+const jwt = require('jsonwebtoken');
+const fs = require('fs');
+
+router.get('/getProfileDataForPublic', async (req, res) => {
+  try {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (token == null) return res.sendStatus(401);
+    const publicKey = fs.readFileSync(process.env.JWT_SECRET_PUBLIC_KEY);
+    const tokenData = jwt.verify(token, publicKey, { alrogithms: ['RS256'] });
+    const userData = await User.findOne({
+      where: {email: tokenData.email},
+      include: [Profile, {model: Role, include: RoleTranslation}],
+      attributes: ['email', 'firstName', 'lastName']
+    });
+    return res.send(userData);
+  } catch (error) {
+    console.log(error);
+    return res.send({ error: error.name });
+  }
+});
+
 
 router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
   try {

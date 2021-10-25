@@ -23,7 +23,7 @@ class JWTManager {
     static getEmailByToken(header) {
         const authHeader = header;
         const token = authHeader && authHeader.split(' ')[1];
-        if (token == null) return res.sendStatus(401);
+        if (token == null) return 'forbidden';
         const publicKey = fs.readFileSync(process.env.JWT_SECRET_PUBLIC_KEY);
         const tokenData = jwt.verify(token, publicKey, { alrogithms: ['RS256'] });
         return tokenData.email;

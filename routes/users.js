@@ -7,6 +7,9 @@ const JWTManager = require('../middlewares/jwt_manager');
 router.get('/getDataForPublic', async (req, res) => {
   try {
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
+    if(email == 'forbidden'){
+      return res.sendStatus(403);
+    }
     const userData = await User.findOne({ where: { email: email }, include: Profile });
     const monogram = userData.firstName[0] + userData.lastName[0];
     return res.send({ monogram: monogram, profilePicture: userData.Profile.profilePicture });
@@ -19,6 +22,9 @@ router.get('/getDataForPublic', async (req, res) => {
 router.post('/public/modifyUserData', async (req, res) => {
   try {
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
+    if(email == 'forbidden'){
+      return res.sendStatus(403);
+    }
     const { firstName, lastName } = req.body;
     const userData = await User.update(
       { firstName, lastName },
@@ -35,6 +41,9 @@ router.post('/public/modifyUserData', async (req, res) => {
 router.post('/public/changePassword', async (req, res) => {
   try {
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
+    if(email == 'forbidden'){
+      return res.sendStatus(403);
+    }
     const { currentPassword, password } = req.body;
     const data = await User.findOne({ where: { email: email } });
     const isAuthenticated = await bcrypt.compare(currentPassword, data.password)

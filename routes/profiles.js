@@ -7,6 +7,9 @@ const fs = require('fs');
 router.get('/getProfileDataForPublic', async (req, res) => {
   try {
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
+    if(email == 'forbidden'){
+      return res.sendStatus(403);
+    }
     const userData = await User.findOne({
       where: { email: email },
       include: [Profile, { model: Role, include: RoleTranslation }],
@@ -22,6 +25,9 @@ router.get('/getProfileDataForPublic', async (req, res) => {
 router.post('/public/modifyProfileData', async (req, res) => {
   try {
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
+    if(email == 'forbidden'){
+      return res.sendStatus(403);
+    }
     const userData = await User.findOne({ where: { email: email } });
     const {
       jobTitle, age, currentSalary, expectedSalary, description,
@@ -44,6 +50,9 @@ router.post('/public/editProfilePicture', async (req, res) => {
   try {
     let imageUrlString = "";
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
+    if(email == 'forbidden'){
+      return res.sendStatus(403);
+    }
     const directory = email.replace(/[&\/\\#,+()$~%.@'":*?<>{}]/g,'_');
     const userData = await User.findOne({ where: { email: email } });
 

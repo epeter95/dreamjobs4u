@@ -31,6 +31,26 @@ router.post('/public/modifyUserData', async (req, res) => {
   }
 });
 
+
+router.post('/public/changePassword', async (req, res) => {
+  try {
+    const email = JWTManager.getEmailByToken(req.headers['authorization']);
+    const { currentPassword, password } = req.body;
+    const data = await User.findOne({ where: { email: email } });
+    const isAuthenticated = await bcrypt.compare(currentPassword, data.password)
+    if (!isAuthenticated) {
+      return res.sendStatus(401);
+    }else{
+      const hashedPassword = await hashPassword(password);
+      const updateData = await User.update({password: hashedPassword},{ where: { email: email } });
+      return res.send({ ok: 'siker' });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.send({ error: error.name });
+  }
+});
+
 router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const data = await User.findAll({ include: Role });

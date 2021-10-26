@@ -46,18 +46,14 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
 router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const {
-            userId, companyName, logoUrl, jobLocation,title,
-            taskList, aboutUs, expectationList, offerList,
-            requiredExperience, requiredQualification, requiredLanguage,
-            employmentType
+            userId, companyName, logoUrl,companyWebsite,
+            jobLocation, title, aboutUs, jobDescription
         } = req.body;
-        const data = await Job.create({ userId, companyName, logoUrl, jobLocation });
+        const data = await Job.create({ userId, companyName, logoUrl, jobLocation, companyWebsite });
         const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         const translationData = await JobTranslation.create({
             jobId: data.id, languageId: hunLanguage.id,title,
-            taskList, aboutUs, expectationList, offerList,
-            requiredExperience, requiredQualification, requiredLanguage,
-            employmentType
+            aboutUs, jobDescription
         });
         return res.send({ ok: 'siker' });
     } catch (error) {
@@ -69,8 +65,8 @@ router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
 router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
-        const { userId, companyName, logoUrl, jobLocation } = req.body;
-        const data = await Job.update({userId, companyName, logoUrl, jobLocation}, {
+        const { userId, companyName,companyWebsite, logoUrl, jobLocation } = req.body;
+        const data = await Job.update({userId, companyName,companyWebsite, logoUrl, jobLocation}, {
             where: { id: paramId },
         });
 

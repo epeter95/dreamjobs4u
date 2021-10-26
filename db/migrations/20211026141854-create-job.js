@@ -14,6 +14,9 @@ module.exports = {
       companyName: {
         type: Sequelize.STRING
       },
+      companyWebsite: {
+        type: Sequelize.STRING
+      },
       logoUrl: {
         type: Sequelize.STRING
       },

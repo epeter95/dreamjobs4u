@@ -33,14 +33,8 @@ module.exports = (sequelize, DataTypes) => {
     jobId: DataTypes.INTEGER,
     languageId: DataTypes.INTEGER,
     title: DataTypes.STRING,
-    taskList: DataTypes.STRING,
-    expectationList: DataTypes.STRING,
-    offerList: DataTypes.STRING,
     aboutUs: DataTypes.STRING,
-    requiredExperience: DataTypes.STRING,
-    requiredQualification: DataTypes.STRING,
-    requiredLanguage: DataTypes.STRING,
-    employmentType: DataTypes.STRING
+    jobDescription: DataTypes.STRING,
   }, {
     sequelize,
     tableName: 'job_translations',

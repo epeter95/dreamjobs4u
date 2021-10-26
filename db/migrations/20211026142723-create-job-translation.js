@@ -17,29 +17,11 @@ module.exports = {
       title: {
         type: Sequelize.STRING
       },
-      taskList: {
-        type: Sequelize.STRING(1024)
-      },
       aboutUs:{
         type: Sequelize.STRING(1024)
       },
-      expectationList: {
-        type: Sequelize.STRING(1024)
-      },
-      offerList: {
-        type: Sequelize.STRING(1024)
-      },
-      requiredExperience: {
-        type: Sequelize.STRING
-      },
-      requiredQualification: {
-        type: Sequelize.STRING
-      },
-      requiredLanguage: {
-        type: Sequelize.STRING
-      },
-      employmentType: {
-        type: Sequelize.STRING
+      jobDescription: {
+        type: Sequelize.STRING(2048)
       },
       createdAt: {
         allowNull: false,

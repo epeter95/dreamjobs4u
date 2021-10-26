@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Job, JobTranslation, Language } = require('../db/models');
+const { Job, JobTranslation, Language, User } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 
 router.get('/public', async (req, res) => {
@@ -18,7 +18,7 @@ router.get('/public', async (req, res) => {
 router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const data = await Job.findAll({
-            include: JobTranslation
+            include: [JobTranslation, User]
         });
         return res.send(data);
     } catch (error) {

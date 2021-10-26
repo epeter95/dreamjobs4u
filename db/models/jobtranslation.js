@@ -32,6 +32,7 @@ module.exports = (sequelize, DataTypes) => {
   JobTranslation.init({
     jobId: DataTypes.INTEGER,
     languageId: DataTypes.INTEGER,
+    title: DataTypes.STRING,
     taskList: DataTypes.STRING,
     expectationList: DataTypes.STRING,
     offerList: DataTypes.STRING,

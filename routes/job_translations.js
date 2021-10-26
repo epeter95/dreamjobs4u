@@ -34,13 +34,13 @@ router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
 router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const {
-            jobId, languageId,
+            jobId, languageId, title,
             taskList, aboutUs, expectationList, offerList,
             requiredExperience, requiredQualification, requiredLanguage,
             employmentType
         } = req.body;
         const data = await JobTranslation.create({
-            jobId, languageId,
+            jobId, languageId, title,
             taskList, aboutUs, expectationList, offerList,
             requiredExperience, requiredQualification, requiredLanguage,
             employmentType
@@ -56,13 +56,13 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
         const {
-            jobId, languageId,
+            jobId, languageId, title,
             taskList, aboutUs, expectationList, offerList,
             requiredExperience, requiredQualification, requiredLanguage,
             employmentType
         } = req.body;
         const data = await JobTranslation.update({
-            jobId, languageId,
+            jobId, languageId, title,
             taskList, aboutUs, expectationList, offerList,
             requiredExperience, requiredQualification, requiredLanguage,
             employmentType

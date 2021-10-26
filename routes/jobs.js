@@ -46,7 +46,7 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
 router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const {
-            userId, companyName, logoUrl, jobLocation,
+            userId, companyName, logoUrl, jobLocation,title,
             taskList, aboutUs, expectationList, offerList,
             requiredExperience, requiredQualification, requiredLanguage,
             employmentType
@@ -54,7 +54,7 @@ router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
         const data = await Job.create({ userId, companyName, logoUrl, jobLocation });
         const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         const translationData = await JobTranslation.create({
-            jobId: data.id, languageId: hunLanguage.id,
+            jobId: data.id, languageId: hunLanguage.id,title,
             taskList, aboutUs, expectationList, offerList,
             requiredExperience, requiredQualification, requiredLanguage,
             employmentType

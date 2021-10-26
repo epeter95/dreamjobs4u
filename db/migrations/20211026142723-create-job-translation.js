@@ -14,6 +14,9 @@ module.exports = {
       languageId: {
         type: Sequelize.INTEGER
       },
+      title: {
+        type: Sequelize.STRING
+      },
       taskList: {
         type: Sequelize.STRING(1024)
       },

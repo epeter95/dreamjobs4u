@@ -15,7 +15,98 @@ router.get('/public', async (req, res) => {
     }
 });
 
-router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
+router.get('/public/getJobsByToken', async (req, res) => {
+    try {
+        const email = JWTManager.getEmailByToken(req.headers['authorization']);
+        if (email == 'forbidden') {
+            return res.sendStatus(403);
+        }
+        const userData = await User.findOne({ where: { email: email } });
+        const data = await Job.findAll({
+            include: JobTranslation
+        }, {where: {userId: userData.id}});
+        return res.send(data);
+    } catch (error) {
+        console.log(error);
+        return res.send({ error: error.name });
+    }
+});
+
+router.get('/public/getJobByIdAndToken/:id', async (req, res) => {
+    try {
+        const email = JWTManager.getEmailByToken(req.headers['authorization']);
+        if (email == 'forbidden') {
+            return res.sendStatus(403);
+        }
+        const userData = await User.findOne({ where: { email: email } });
+        const data = await Job.findOne({
+            where: {userId: userData.id, id: req.params.id},
+            include: JobTranslation
+        });
+        return res.send(data);
+    } catch (error) {
+        console.log(error);
+        return res.send({ error: error.name });
+    }
+});
+
+router.get('/public/getJobDropdwonDataByToken', async (req, res) => {
+    try {
+        const email = JWTManager.getEmailByToken(req.headers['authorization']);
+        if (email == 'forbidden') {
+            return res.sendStatus(403);
+        }
+        const userData = await User.findOne({ where: { email: email } });
+        const data = await Job.findAll({
+            where: {userId: userData.id},
+            attributes: ['id', 'companyName']
+        });
+        return res.send(data);
+    } catch (error) {
+        console.log(error);
+        return res.send({ error: error.name });
+    }
+});
+
+router.post('/public/createJob', async (req, res) => {
+    try {
+        const email = JWTManager.getEmailByToken(req.headers['authorization']);
+        if (email == 'forbidden') {
+            return res.sendStatus(403);
+        }
+        const userData = await User.findOne({ where: { email: email } });
+        console.log(userData);
+        const {
+            companyName, logoUrl, companyWebsite,
+            jobLocation, hunTitle, hunAboutUs, hunJobDescription,
+            enTitle, enAboutUs, enJobDescription
+        } = req.body;
+        console.log({
+            companyName, logoUrl, companyWebsite,
+            jobLocation, hunTitle, hunAboutUs, hunJobDescription,
+            enTitle, enAboutUs, enJobDescription
+        })
+        const data = await Job.create({ userId: userData.id, companyName, logoUrl, jobLocation, companyWebsite });
+        const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
+        const translationData = await JobTranslation.create({
+            jobId: data.id, languageId: hunLanguage.id, title: hunTitle,
+            aboutUs: hunAboutUs, jobDescription: hunJobDescription
+        });
+        if(enTitle || enAboutUs || enJobDescription){
+            const enLanguage = await Language.findOne({ where: { key: process.env.ENGLISH_LANGUAGE_KEY } });
+            const enTranslationData = await JobTranslation.create({
+                jobId: data.id, languageId: enLanguage.id, title: enTitle,
+                aboutUs: enAboutUs, jobDescription: enJobDescription
+            });
+        }
+        return res.send({ ok: 'siker' });
+    } catch (error) {
+        console.log(error);
+        return res.send({ error: error.name });
+    }
+});
+
+router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const data = await Job.findAll({
             include: [JobTranslation, User]
@@ -27,7 +118,7 @@ router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
     }
 });
 
-router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
+router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
         let data;
@@ -43,16 +134,16 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     }
 });
 
-router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
+router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const {
-            userId, companyName, logoUrl,companyWebsite,
+            userId, companyName, logoUrl, companyWebsite,
             jobLocation, title, aboutUs, jobDescription
         } = req.body;
         const data = await Job.create({ userId, companyName, logoUrl, jobLocation, companyWebsite });
         const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         const translationData = await JobTranslation.create({
-            jobId: data.id, languageId: hunLanguage.id,title,
+            jobId: data.id, languageId: hunLanguage.id, title,
             aboutUs, jobDescription
         });
         return res.send({ ok: 'siker' });
@@ -62,11 +153,11 @@ router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
     }
 });
 
-router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
+router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
-        const { userId, companyName,companyWebsite, logoUrl, jobLocation } = req.body;
-        const data = await Job.update({userId, companyName,companyWebsite, logoUrl, jobLocation}, {
+        const { userId, companyName, companyWebsite, logoUrl, jobLocation } = req.body;
+        const data = await Job.update({ userId, companyName, companyWebsite, logoUrl, jobLocation }, {
             where: { id: paramId },
         });
 
@@ -77,7 +168,7 @@ router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     }
 });
 
-router.delete('/:id',JWTManager.verifyAdminUser, async (req, res) => {
+router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
         const data = await Job.destroy({

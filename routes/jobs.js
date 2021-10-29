@@ -24,7 +24,7 @@ router.get('/public/getJobsByToken', async (req, res) => {
         const userData = await User.findOne({ where: { email: email } });
         const data = await Job.findAll({
             include: JobTranslation
-        }, {where: {userId: userData.id}});
+        }, { where: { userId: userData.id } });
         return res.send(data);
     } catch (error) {
         console.log(error);
@@ -40,7 +40,7 @@ router.get('/public/getJobByIdAndToken/:id', async (req, res) => {
         }
         const userData = await User.findOne({ where: { email: email } });
         const data = await Job.findOne({
-            where: {userId: userData.id, id: req.params.id},
+            where: { userId: userData.id, id: req.params.id },
             include: JobTranslation
         });
         return res.send(data);
@@ -58,7 +58,7 @@ router.get('/public/getJobDropdwonDataByToken', async (req, res) => {
         }
         const userData = await User.findOne({ where: { email: email } });
         const data = await Job.findAll({
-            where: {userId: userData.id},
+            where: { userId: userData.id },
             attributes: ['id', 'companyName']
         });
         return res.send(data);
@@ -92,7 +92,7 @@ router.post('/public/createJob', async (req, res) => {
             jobId: data.id, languageId: hunLanguage.id, title: hunTitle,
             aboutUs: hunAboutUs, jobDescription: hunJobDescription
         });
-        if(enTitle || enAboutUs || enJobDescription){
+        if (enTitle || enAboutUs || enJobDescription) {
             const enLanguage = await Language.findOne({ where: { key: process.env.ENGLISH_LANGUAGE_KEY } });
             const enTranslationData = await JobTranslation.create({
                 jobId: data.id, languageId: enLanguage.id, title: enTitle,
@@ -100,6 +100,37 @@ router.post('/public/createJob', async (req, res) => {
             });
         }
         return res.send({ ok: 'siker' });
+    } catch (error) {
+        console.log(error);
+        return res.send({ error: error.name });
+    }
+});
+
+router.put('/public/modifyJob/:id', async (req, res) => {
+    try {
+        const {
+            companyName, logoUrl, companyWebsite,
+            jobLocation, hunTitle, hunAboutUs, hunJobDescription,
+            enTitle, enAboutUs, enJobDescription
+        } = req.body;
+        await Job.update({ companyName, logoUrl, jobLocation, companyWebsite }, { where: { id: req.params.id } });
+        const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
+        await JobTranslation.update({
+            title: hunTitle, aboutUs: hunAboutUs, jobDescription: hunJobDescription
+        }, { where: { jobId: req.params.id, languageId: hunLanguage.id } });
+        const enLanguage = await Language.findOne({ where: { key: process.env.ENGLISH_LANGUAGE_KEY } });
+        const enTranslation = await JobTranslation.findOne({ where: { jobId: req.params.id, languageId: enLanguage.id } });
+        if (enTranslation) {
+            await JobTranslation.update({
+                title: enTitle, aboutUs: enAboutUs, jobDescription: enJobDescription
+            }, { where: { id: enTranslation.id } });
+        } else {
+            await JobTranslation.create({
+                jobId: req.params.id, languageId: enLanguage.id, title: enTitle,
+                aboutUs: enAboutUs, jobDescription: enJobDescription
+            });
+        }
+        return res.send({ok: 'siker'});
     } catch (error) {
         console.log(error);
         return res.send({ error: error.name });

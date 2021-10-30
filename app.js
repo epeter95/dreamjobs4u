@@ -43,7 +43,7 @@ app.use(fileUpload());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public/users/profile_pictures')));
+app.use(express.static(path.join(__dirname, 'public/users')));
 
 app.use('/', indexRouter);
 

@@ -49,16 +49,9 @@ router.post('/public/modifyProfileData', async (req, res) => {
 
 router.post('/public/editProfilePicture', async (req, res) => {
   try {
-    let imageUrlString = "";
-    const email = JWTManager.getEmailByToken(req.headers['authorization']);
-    if (email == 'forbidden') {
-      return res.sendStatus(403);
-    }
-    const directoryName = email.replace(/[&\/\\#,+()$~%.@'":*?<>{}]/g, '_');
-    const directoryPath = './public/users/profile_pictures/' + directoryName;
-    const userData = await User.findOne({ where: { email: email } });
-    imageUrlString = FileManager.handleFileUpload(req, directoryPath, directoryName, 'profilePictureUrl');
-    const profileData = await Profile.update({ profilePicture: imageUrlString }, { where: { userId: userData.id } })
+    const directoryName = '/profile_pictures';
+    const { imageUrlString, userId} = await FileManager.handleFileUpload(req, directoryName, 'profilePictureUrl',true);
+    const profileData = await Profile.update({ profilePicture: imageUrlString }, { where: { userId: userId} })
     return res.send({ ok: 'siker' });
   } catch (error) {
     console.log(error);

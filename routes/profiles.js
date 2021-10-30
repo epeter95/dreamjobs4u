@@ -3,7 +3,6 @@ const router = express.Router();
 const { Profile, User, Role, RoleTranslation } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 const FileManager = require('../middlewares/file_manager');
-const fs = require('fs');
 
 router.get('/getProfileDataForPublic', async (req, res) => {
   try {
@@ -49,9 +48,15 @@ router.post('/public/modifyProfileData', async (req, res) => {
 
 router.post('/public/editProfilePicture', async (req, res) => {
   try {
-    const directoryName = '/profile_pictures';
-    const { imageUrlString, userId} = await FileManager.handleFileUpload(req, directoryName, 'profilePictureUrl',true);
-    const profileData = await Profile.update({ profilePicture: imageUrlString }, { where: { userId: userId} })
+    const email = JWTManager.getEmailByToken(req.headers['authorization']);
+    const userData = await User.findOne({ where: { email: email } });
+    if (email == 'forbidden') {
+      return res.sendStatus(403);
+    }
+    const directoryName = userData.id + '/profile_pictures';
+    const directoryRoot = './public/users/' + directoryName;
+    const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'profilePictureUrl', true);
+    const profileData = await Profile.update({ profilePicture: imageUrlString }, { where: { userId: userData.id } })
     return res.send({ ok: 'siker' });
   } catch (error) {
     console.log(error);

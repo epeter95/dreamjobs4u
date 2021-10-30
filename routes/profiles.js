@@ -2,12 +2,13 @@ const express = require('express');
 const router = express.Router();
 const { Profile, User, Role, RoleTranslation } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
+const FileManager = require('../middlewares/file_manager');
 const fs = require('fs');
 
 router.get('/getProfileDataForPublic', async (req, res) => {
   try {
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
-    if(email == 'forbidden'){
+    if (email == 'forbidden') {
       return res.sendStatus(403);
     }
     const userData = await User.findOne({
@@ -25,7 +26,7 @@ router.get('/getProfileDataForPublic', async (req, res) => {
 router.post('/public/modifyProfileData', async (req, res) => {
   try {
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
-    if(email == 'forbidden'){
+    if (email == 'forbidden') {
       return res.sendStatus(403);
     }
     const userData = await User.findOne({ where: { email: email } });
@@ -50,31 +51,15 @@ router.post('/public/editProfilePicture', async (req, res) => {
   try {
     let imageUrlString = "";
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
-    if(email == 'forbidden'){
+    if (email == 'forbidden') {
       return res.sendStatus(403);
     }
-    const directory = email.replace(/[&\/\\#,+()$~%.@'":*?<>{}]/g,'_');
+    const directoryName = email.replace(/[&\/\\#,+()$~%.@'":*?<>{}]/g, '_');
+    const directoryPath = './public/users/profile_pictures/' + directoryName;
     const userData = await User.findOne({ where: { email: email } });
-
-    if (req.files && req.files.profilePictureUrl) {
-      const fileData = req.files.profilePictureUrl;
-      if (!fs.existsSync('./public/users/profile_pictures/' + directory)) {
-        console.log("Létrehozná!");
-        fs.mkdirSync('./public/users/profile_pictures/' + directory);
-      }
-      if(fs.readdirSync('./public/users/profile_pictures/' + directory).length != 0){
-        fs.rmdirSync('./public/users/profile_pictures/' + directory, { recursive: true });
-        fs.mkdirSync('./public/users/profile_pictures/' + directory);
-      }
-      const path = './public/users/profile_pictures/' + directory + '/' + fileData.name;
-      fs.writeFile(path, fileData.data,{},()=>{
-      });
-      imageUrlString = directory + '/' +fileData.name;
-    }else{
-      fs.rmdirSync('./public/users/profile_pictures/' + directory, { recursive: true });
-    }
+    imageUrlString = FileManager.handleFileUpload(req, directoryPath, directoryName, 'profilePictureUrl');
     const profileData = await Profile.update({ profilePicture: imageUrlString }, { where: { userId: userData.id } })
-    return res.send({ok: 'siker'});
+    return res.send({ ok: 'siker' });
   } catch (error) {
     console.log(error);
     return res.send({ error: error.name })

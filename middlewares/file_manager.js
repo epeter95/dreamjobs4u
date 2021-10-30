@@ -18,7 +18,7 @@ class FileManager {
             const path =  directoryPath + '/' + fileData.name;
             fs.writeFile(path, fileData.data, {}, () => {
             });
-            imageUrlString = directoryName + '/' + fileData.name;
+            imageUrlString = process.env.DOMAIN_NAME + directoryName + '/' + fileData.name;
         } else {
             fs.rmdirSync( directoryPath, { recursive: true });
         }

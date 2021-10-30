@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Job, JobTranslation, Language, User, Category, CategoryTranslation } = require('../db/models');
+const { Job, JobTranslation, Language, User, Category, CategoryTranslation, Profile } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 const FileManager = require('../middlewares/file_manager');
 
@@ -8,6 +8,20 @@ router.get('/public', async (req, res) => {
     try {
         const data = await Job.findAll({
             include: JobTranslation
+        });
+        return res.send(data);
+    } catch (error) {
+        console.log(error);
+        return res.send({ error: error.name });
+    }
+});
+
+router.get('/public/getJobById/:id', async (req, res) => {
+    try {
+        let id = req.params.id;
+        const data = await Job.findOne({
+            include: [JobTranslation, {model: Category, include: CategoryTranslation}, {model: User, include: Profile}],
+            where: {id: id}
         });
         return res.send(data);
     } catch (error) {

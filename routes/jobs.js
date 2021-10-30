@@ -77,15 +77,14 @@ router.post('/public/createJob', async (req, res) => {
         }
         const userData = await User.findOne({ where: { email: email } });
         const {
-            companyName, companyWebsite,
+            companyName, companyWebsite, categoryId,
             jobLocation, hunTitle, hunAboutUs, hunJobDescription,
             enTitle, enAboutUs, enJobDescription
         } = req.body;
-        const data = await Job.create({ userId: userData.id, companyName, jobLocation, companyWebsite });
+        const data = await Job.create({ userId: userData.id, categoryId, companyName, jobLocation, companyWebsite });
         const directoryName = userData.id + '/jobs/' + data.id;
         const directoryRoot = './public/users/' + directoryName;
         const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'logoUrl');
-        console.log(directoryName);
         data.logoUrl = imageUrlString;
         data.save();
         const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
@@ -115,15 +114,20 @@ router.put('/public/modifyJob/:id', async (req, res) => {
         }
         const userData = await User.findOne({ where: { email: email } });
         const {
-            companyName, companyWebsite,
+            companyName, companyWebsite, categoryId, imageChanging,
             jobLocation, hunTitle, hunAboutUs, hunJobDescription,
             enTitle, enAboutUs, enJobDescription
         } = req.body;
-        const directoryName = userData.id + '/jobs/' + req.params.id;
-        const directoryRoot = './public/users/' + directoryName;
-        const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'logoUrl');
-        console.log(directoryName);
-        await Job.update({ companyName, logoUrl: imageUrlString, jobLocation, companyWebsite }, { where: { id: req.params.id } });
+       
+        if(imageChanging){
+            const directoryName = userData.id + '/jobs/' + req.params.id;
+            const directoryRoot = './public/users/' + directoryName;
+            const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'logoUrl');
+            if(imageUrlString){
+                await Job.update({ logoUrl: imageUrlString }, { where: { id: req.params.id } });
+            }
+        }
+        const updatedJob = await Job.update({ companyName, categoryId, jobLocation, companyWebsite }, { where: { id: req.params.id } });
         const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         await JobTranslation.update({
             title: hunTitle, aboutUs: hunAboutUs, jobDescription: hunJobDescription

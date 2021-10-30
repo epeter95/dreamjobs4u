@@ -18,6 +18,14 @@ module.exports = (sequelize, DataTypes) => {
       Job.belongsTo(models.User, {
         foreignKey: 'userId',
       });
+      models.Category.hasMany(Job, {
+        foreignKey: 'categoryId',
+        onDelete: 'RESTRICT',
+        onUpdate: 'RESTRICT'
+      });
+      Job.belongsTo(models.Category, {
+        foreignKey: 'categoryId',
+      });
     }
   };
   Job.init({

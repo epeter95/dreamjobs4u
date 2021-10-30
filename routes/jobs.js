@@ -115,13 +115,14 @@ router.put('/public/modifyJob/:id', async (req, res) => {
         }
         const userData = await User.findOne({ where: { email: email } });
         const {
-            companyName, logoUrl, companyWebsite,
+            companyName, companyWebsite,
             jobLocation, hunTitle, hunAboutUs, hunJobDescription,
             enTitle, enAboutUs, enJobDescription
         } = req.body;
-        const directoryName = userData.id + '/jobs/' + data.id;
+        const directoryName = userData.id + '/jobs/' + req.params.id;
         const directoryRoot = './public/users/' + directoryName;
-        const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'profilePictureUrl');
+        const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'logoUrl');
+        console.log(directoryName);
         await Job.update({ companyName, logoUrl: imageUrlString, jobLocation, companyWebsite }, { where: { id: req.params.id } });
         const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         await JobTranslation.update({

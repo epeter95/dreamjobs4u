@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Job, JobTranslation, Language, User } = require('../db/models');
+const { Job, JobTranslation, Language, User, Category, CategoryTranslation } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 const FileManager = require('../middlewares/file_manager');
 
@@ -24,7 +24,7 @@ router.get('/public/getJobsByToken', async (req, res) => {
         }
         const userData = await User.findOne({ where: { email: email } });
         const data = await Job.findAll({
-            include: JobTranslation
+            include: [JobTranslation, { model: Category, include: CategoryTranslation }]
         }, { where: { userId: userData.id } });
         return res.send(data);
     } catch (error) {
@@ -118,12 +118,12 @@ router.put('/public/modifyJob/:id', async (req, res) => {
             jobLocation, hunTitle, hunAboutUs, hunJobDescription,
             enTitle, enAboutUs, enJobDescription
         } = req.body;
-       
-        if(imageChanging){
+
+        if (imageChanging) {
             const directoryName = userData.id + '/jobs/' + req.params.id;
             const directoryRoot = './public/users/' + directoryName;
             const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'logoUrl');
-            if(imageUrlString){
+            if (imageUrlString) {
                 await Job.update({ logoUrl: imageUrlString }, { where: { id: req.params.id } });
             }
         }

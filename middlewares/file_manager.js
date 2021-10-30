@@ -20,7 +20,7 @@ class FileManager {
             });
             imageUrlString = directoryName + '/' + fileData.name;
         } else {
-            fs.rmdirSync( directory, { recursive: true });
+            fs.rmdirSync( directoryPath, { recursive: true });
         }
         return imageUrlString;
     }

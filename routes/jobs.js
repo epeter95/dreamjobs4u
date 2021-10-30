@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Job, JobTranslation, Language, User } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
+const FileManager = require('../middlewares/file_manager');
 
 router.get('/public', async (req, res) => {
     try {
@@ -75,18 +76,18 @@ router.post('/public/createJob', async (req, res) => {
             return res.sendStatus(403);
         }
         const userData = await User.findOne({ where: { email: email } });
-        console.log(userData);
         const {
-            companyName, logoUrl, companyWebsite,
+            companyName, companyWebsite,
             jobLocation, hunTitle, hunAboutUs, hunJobDescription,
             enTitle, enAboutUs, enJobDescription
         } = req.body;
-        console.log({
-            companyName, logoUrl, companyWebsite,
-            jobLocation, hunTitle, hunAboutUs, hunJobDescription,
-            enTitle, enAboutUs, enJobDescription
-        })
-        const data = await Job.create({ userId: userData.id, companyName, logoUrl, jobLocation, companyWebsite });
+        const data = await Job.create({ userId: userData.id, companyName, jobLocation, companyWebsite });
+        const directoryName = userData.id + '/jobs/' + data.id;
+        const directoryRoot = './public/users/' + directoryName;
+        const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'logoUrl');
+        console.log(directoryName);
+        data.logoUrl = imageUrlString;
+        data.save();
         const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         const translationData = await JobTranslation.create({
             jobId: data.id, languageId: hunLanguage.id, title: hunTitle,
@@ -108,12 +109,20 @@ router.post('/public/createJob', async (req, res) => {
 
 router.put('/public/modifyJob/:id', async (req, res) => {
     try {
+        const email = JWTManager.getEmailByToken(req.headers['authorization']);
+        if (email == 'forbidden') {
+            return res.sendStatus(403);
+        }
+        const userData = await User.findOne({ where: { email: email } });
         const {
             companyName, logoUrl, companyWebsite,
             jobLocation, hunTitle, hunAboutUs, hunJobDescription,
             enTitle, enAboutUs, enJobDescription
         } = req.body;
-        await Job.update({ companyName, logoUrl, jobLocation, companyWebsite }, { where: { id: req.params.id } });
+        const directoryName = userData.id + '/jobs/' + data.id;
+        const directoryRoot = './public/users/' + directoryName;
+        const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'profilePictureUrl');
+        await Job.update({ companyName, logoUrl: imageUrlString, jobLocation, companyWebsite }, { where: { id: req.params.id } });
         const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         await JobTranslation.update({
             title: hunTitle, aboutUs: hunAboutUs, jobDescription: hunJobDescription
@@ -130,7 +139,7 @@ router.put('/public/modifyJob/:id', async (req, res) => {
                 aboutUs: enAboutUs, jobDescription: enJobDescription
             });
         }
-        return res.send({ok: 'siker'});
+        return res.send({ ok: 'siker' });
     } catch (error) {
         console.log(error);
         return res.send({ error: error.name });

@@ -18,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       unique: true
     },
-    adminName: DataTypes.STRING
+    adminName: DataTypes.STRING,
+    publicKey: DataTypes.STRING
   }, {
     sequelize,
     tableName: 'roles',

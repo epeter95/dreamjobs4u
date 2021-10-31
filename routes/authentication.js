@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, Profile } = require('../db/models');
+const { User, Profile, Role } = require('../db/models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
@@ -51,14 +51,13 @@ router.post('/login/public', async (req, res) => {
         const { loginEmail, loginPassword } = req.body;
         const data = await User.findOne({ where: {email: loginEmail} });
         if(data){
-            console.log("BEJÖTT")
             const isAuthenticated = await bcrypt.compare(loginPassword, data.password)
             if(!isAuthenticated){
                 return res.sendStatus(401);
             }
             const privateKey = fs.readFileSync(process.env.JWT_SECRET_KEY, 'utf8');
             const token = jwt.sign({ email: data.email, role: data.role }, privateKey, {algorithm: 'RS256'});
-            let profileData = await Profile.findOne({where:{userId: data.id}});
+            let profileData = await Profile.findOne({where:{userId: data.id}, include: {model: User, include: Role}});
             if(!profileData){
                 profileData = await Profile.create({
                     userId: data.id, phone: '', profilePicture: '', cvPath: '',
@@ -67,7 +66,7 @@ router.post('/login/public', async (req, res) => {
                 });
             }
             const monogram = data.firstName[0]+data.lastName[0];
-            return res.send({token: token, profilePicture: profileData.profilePicture, monogram: monogram});
+            return res.send({token: token, profilePicture: profileData.profilePicture, monogram: monogram, role: profileData.User.Role.publicKey});
         }else{
             res.send({error: 'userNotExist'})
         }

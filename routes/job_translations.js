@@ -35,11 +35,15 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const {
             jobId, languageId, title,
-            aboutUs, jobDescription
+            aboutUs, jobDescription,payment,
+            jobType, experience, qualification,
+            language
         } = req.body;
         const data = await JobTranslation.create({
             jobId, languageId, title,
-            aboutUs, jobDescription
+            aboutUs, jobDescription,payment,
+            jobType, experience, qualification,
+            language
         });
         return res.send({ ok: 'siker' });
     } catch (error) {
@@ -53,11 +57,15 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const {
             jobId, languageId, title,
-            aboutUs, jobDescription
+            aboutUs, jobDescription,payment,
+            jobType, experience, qualification,
+            language
         } = req.body;
         const data = await JobTranslation.update({
             jobId, languageId, title,
-            aboutUs, jobDescription
+            aboutUs, jobDescription,payment,
+            jobType, experience, qualification,
+            language
         }, {
             where: { id: paramId },
         });

@@ -20,8 +20,8 @@ router.get('/public/getJobById/:id', async (req, res) => {
     try {
         let id = req.params.id;
         const data = await Job.findOne({
-            include: [JobTranslation, {model: Category, include: CategoryTranslation}, {model: User, include: Profile}],
-            where: {id: id}
+            include: [JobTranslation, { model: Category, include: CategoryTranslation }, { model: User, include: Profile }],
+            where: { id: id }
         });
         return res.send(data);
     } catch (error) {
@@ -93,7 +93,9 @@ router.post('/public/createJob', async (req, res) => {
         const {
             companyName, companyWebsite, categoryId,
             jobLocation, hunTitle, hunAboutUs, hunJobDescription,
-            enTitle, enAboutUs, enJobDescription
+            enTitle, enAboutUs, enJobDescription, hunPayment, hunJobType,
+            hunExperience, hunQualification, hunLanguage, enPayment, enJobType,
+            enExperience, enQualification, enLanguage
         } = req.body;
         const data = await Job.create({ userId: userData.id, categoryId, companyName, jobLocation, companyWebsite });
         const directoryName = userData.id + '/jobs/' + data.id;
@@ -101,16 +103,24 @@ router.post('/public/createJob', async (req, res) => {
         const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'logoUrl');
         data.logoUrl = imageUrlString;
         data.save();
-        const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
+        const hunLanguageElement = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         const translationData = await JobTranslation.create({
-            jobId: data.id, languageId: hunLanguage.id, title: hunTitle,
-            aboutUs: hunAboutUs, jobDescription: hunJobDescription
+            jobId: data.id, languageId: hunLanguageElement.id, title: hunTitle,
+            aboutUs: hunAboutUs, jobDescription: hunJobDescription,
+            payment: hunPayment, jobType: hunJobType,
+            experience: hunExperience, qualification: hunQualification,
+            language: hunLanguage
         });
-        if (enTitle || enAboutUs || enJobDescription) {
-            const enLanguage = await Language.findOne({ where: { key: process.env.ENGLISH_LANGUAGE_KEY } });
+        if (enTitle || enAboutUs || enJobDescription
+            || enPayment || enJobType || enExperience||
+            enQualification || enLanguage) {
+            const enLanguageElement = await Language.findOne({ where: { key: process.env.ENGLISH_LANGUAGE_KEY } });
             const enTranslationData = await JobTranslation.create({
-                jobId: data.id, languageId: enLanguage.id, title: enTitle,
-                aboutUs: enAboutUs, jobDescription: enJobDescription
+                jobId: data.id, languageId: enLanguageElement.id, title: enTitle,
+                aboutUs: enAboutUs, jobDescription: enJobDescription,
+                payment: enPayment, jobType: enJobType,
+                experience: enExperience, qualification: enQualification,
+                language: enLanguage
             });
         }
         return res.send({ ok: 'siker' });
@@ -130,7 +140,9 @@ router.put('/public/modifyJob/:id', async (req, res) => {
         const {
             companyName, companyWebsite, categoryId, imageChanging,
             jobLocation, hunTitle, hunAboutUs, hunJobDescription,
-            enTitle, enAboutUs, enJobDescription
+            enTitle, enAboutUs, enJobDescription, hunPayment, hunJobType,
+            hunExperience, hunQualification, hunLanguage, enPayment, enJobType,
+            enExperience, enQualification, enLanguage
         } = req.body;
 
         if (imageChanging) {
@@ -142,20 +154,30 @@ router.put('/public/modifyJob/:id', async (req, res) => {
             }
         }
         const updatedJob = await Job.update({ companyName, categoryId, jobLocation, companyWebsite }, { where: { id: req.params.id } });
-        const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
+        const hunLanguageElement = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         await JobTranslation.update({
-            title: hunTitle, aboutUs: hunAboutUs, jobDescription: hunJobDescription
-        }, { where: { jobId: req.params.id, languageId: hunLanguage.id } });
-        const enLanguage = await Language.findOne({ where: { key: process.env.ENGLISH_LANGUAGE_KEY } });
-        const enTranslation = await JobTranslation.findOne({ where: { jobId: req.params.id, languageId: enLanguage.id } });
+            title: hunTitle, aboutUs: hunAboutUs, jobDescription: hunJobDescription,
+            payment: hunPayment, jobType: hunJobType,
+            experience: hunExperience, qualification: hunQualification,
+            language: hunLanguage
+        }, { where: { jobId: req.params.id, languageId: hunLanguageElement.id } });
+        const enLanguageElement = await Language.findOne({ where: { key: process.env.ENGLISH_LANGUAGE_KEY } });
+        const enTranslation = await JobTranslation.findOne({ where: { jobId: req.params.id, languageId: enLanguageElement.id } });
         if (enTranslation) {
             await JobTranslation.update({
-                title: enTitle, aboutUs: enAboutUs, jobDescription: enJobDescription
+                title: enTitle, aboutUs: enAboutUs,
+                jobDescription: enJobDescription,
+                payment: enPayment, jobType: enJobType,
+                experience: enExperience, qualification: enQualification,
+                language: enLanguage
             }, { where: { id: enTranslation.id } });
         } else {
             await JobTranslation.create({
-                jobId: req.params.id, languageId: enLanguage.id, title: enTitle,
-                aboutUs: enAboutUs, jobDescription: enJobDescription
+                jobId: req.params.id, languageId: enLanguageElement.id, title: enTitle,
+                aboutUs: enAboutUs, jobDescription: enJobDescription,
+                payment: enPayment, jobType: enJobType,
+                experience: enExperience, qualification: enQualification,
+                language: enLanguage
             });
         }
         return res.send({ ok: 'siker' });
@@ -197,13 +219,17 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const {
             userId, companyName, logoUrl, companyWebsite,
-            jobLocation, title, aboutUs, jobDescription
+            jobLocation, title, aboutUs, jobDescription,
+            payment, jobType, experience, qualification,
+            language
         } = req.body;
         const data = await Job.create({ userId, companyName, logoUrl, jobLocation, companyWebsite });
         const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         const translationData = await JobTranslation.create({
             jobId: data.id, languageId: hunLanguage.id, title,
-            aboutUs, jobDescription
+            aboutUs, jobDescription, language,
+            payment, jobType, experience, qualification,
+
         });
         return res.send({ ok: 'siker' });
     } catch (error) {

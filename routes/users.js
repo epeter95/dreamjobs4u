@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, Role, Profile } = require('../db/models');
+const { User, Role, Profile, Category, CategoryTranslation } = require('../db/models');
 const bcrypt = require('bcrypt');
 const JWTManager = require('../middlewares/jwt_manager');
 
@@ -13,6 +13,24 @@ router.get('/getDataForPublic', async (req, res) => {
     const userData = await User.findOne({ where: { email: email }, include: Profile });
     const monogram = userData.firstName[0] + userData.lastName[0];
     return res.send({ monogram: monogram, profilePicture: userData.Profile.profilePicture });
+  } catch (error) {
+    console.log(error);
+    return res.send({ error: error.name });
+  }
+});
+
+router.get('/getUserDataWithCategoriesForPublic', async (req, res) => {
+  try {
+    const email = JWTManager.getEmailByToken(req.headers['authorization']);
+    if(email == 'forbidden'){
+      return res.sendStatus(403);
+    }
+    const userData = await User.findOne({
+      where: { email: email },
+      attributes: ['email', 'firstName', 'lastName'],
+      include: {model: Category, include: CategoryTranslation}
+    });
+    return res.send(userData);
   } catch (error) {
     console.log(error);
     return res.send({ error: error.name });
@@ -34,6 +52,28 @@ router.post('/public/modifyUserData', async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.send({ error: error.name });
+  }
+});
+
+router.post('/public/addUserCategories', async (req, res) => {
+  try{
+    let categories = req.body.categories;
+    const email = JWTManager.getEmailByToken(req.headers['authorization']);
+    if(email == 'forbidden'){
+      return res.sendStatus(403);
+    }
+    console.log(email);
+    let userRow = await User.findOne({where: {email: email}});
+    console.log(userRow);
+    await userRow.setCategories([]);
+    console.log("categories removed");
+    for(let i=0;i<categories.length;++i){
+      const categoryRow = await Category.findOne({where: {id: categories[i].id}});
+      await userRow.addCategory(categoryRow);
+    }
+    return res.send({status: 'ok'});
+  }catch(error){
+    console.log(error);
   }
 });
 

@@ -7,7 +7,7 @@ const FileManager = require('../middlewares/file_manager');
 router.get('/public', async (req, res) => {
     try {
         const data = await Job.findAll({
-            include: JobTranslation
+            include: [JobTranslation, {model: Category, include: CategoryTranslation}]
         });
         return res.send(data);
     } catch (error) {

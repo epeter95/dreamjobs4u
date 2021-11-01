@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { Category, CategoryTranslation, Language } = require('../db/models');
+const { Category, CategoryTranslation, Language, Job } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
+const Sequelize = require('sequelize');
 
 router.get('/public', async (req, res) => {
   try {
     const data = await Category.findAll({
-      include: CategoryTranslation
+      include: [CategoryTranslation,Job]
+        
     });
     return res.send(data);
   } catch (error) {

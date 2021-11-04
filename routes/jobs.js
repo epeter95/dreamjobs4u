@@ -4,6 +4,19 @@ const { Job, JobTranslation, Language, User, Category, CategoryTranslation, Prof
 const JWTManager = require('../middlewares/jwt_manager');
 const FileManager = require('../middlewares/file_manager');
 
+router.get('/public/getJobsByCategoryId/:id', async (req, res) => {
+    try {
+        const categoryId = req.params.id;
+        const data = await Job.findAll({
+            include: [JobTranslation, {model: Category, where: {id: categoryId}, include: CategoryTranslation}]
+        });
+        return res.send(data);
+    } catch (error) {
+        console.log(error);
+        return res.send({ error: error.name });
+    }
+});
+
 router.get('/public', async (req, res) => {
     try {
         const data = await Job.findAll({

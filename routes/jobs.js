@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Job, JobTranslation, Language, User, Category, CategoryTranslation, Profile } = require('../db/models');
+const { Job, JobTranslation, Language, User, Category, CategoryTranslation, Profile, UserAppliedToJob } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 const FileManager = require('../middlewares/file_manager');
 
@@ -8,7 +8,7 @@ router.get('/public/getJobsByCategoryId/:id', async (req, res) => {
     try {
         const categoryId = req.params.id;
         const data = await Job.findAll({
-            include: [JobTranslation, {model: Category, where: {id: categoryId}, include: CategoryTranslation}]
+            include: [JobTranslation, { model: Category, where: { id: categoryId }, include: CategoryTranslation }]
         });
         return res.send(data);
     } catch (error) {
@@ -20,7 +20,7 @@ router.get('/public/getJobsByCategoryId/:id', async (req, res) => {
 router.get('/public', async (req, res) => {
     try {
         const data = await Job.findAll({
-            include: [JobTranslation, {model: Category, include: CategoryTranslation}]
+            include: [JobTranslation, { model: Category, include: CategoryTranslation }]
         });
         return res.send(data);
     } catch (error) {
@@ -96,6 +96,27 @@ router.get('/public/getJobDropdwonDataByToken', async (req, res) => {
     }
 });
 
+router.post('/public/userApplyToJob', async (req, res) => {
+    try {
+        const { jobId } = req.body;
+        const email = JWTManager.getEmailByToken(req.headers['authorization']);
+        if (email == 'forbidden') {
+            return res.sendStatus(403);
+        }
+        let userRow = await User.findOne({ where: { email: email } });
+        let userAppliedJobRow = await UserAppliedToJob.findOne({where: {userId: userRow.id, jobId: jobId}});
+        if(userAppliedJobRow){
+            return res.send({ error: 'userAlreadyApplied' });
+        }else{
+            await UserAppliedToJob.create({userId: userRow.id, jobId});
+        }
+        return res.send({ status: 'ok' });
+    } catch (error) {
+        console.log(error);
+        return res.send({ error: error.name });
+    }
+});
+
 router.post('/public/createJob', async (req, res) => {
     try {
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
@@ -125,7 +146,7 @@ router.post('/public/createJob', async (req, res) => {
             language: hunLanguage
         });
         if (enTitle || enAboutUs || enJobDescription
-            || enPayment || enJobType || enExperience||
+            || enPayment || enJobType || enExperience ||
             enQualification || enLanguage) {
             const enLanguageElement = await Language.findOne({ where: { key: process.env.ENGLISH_LANGUAGE_KEY } });
             const enTranslationData = await JobTranslation.create({

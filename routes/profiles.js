@@ -33,9 +33,12 @@ router.post('/public/modifyProfileData', async (req, res) => {
       jobTitle, age, currentSalary, expectedSalary, description,
       country, city, zipcode, phone, address
     } = req.body;
+    const directoryName = userData.id + '/user_cv';
+    const directoryRoot = './public/users/' + directoryName;
+    const cvPath = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'cvPath');
     const profileData = await Profile.update({
       jobTitle, age, currentSalary, expectedSalary, description,
-      country, city, zipcode, phone, address
+      country, city, zipcode, phone, address,cvPath
     },
       { where: { userId: userData.id }, }
     );

@@ -18,13 +18,18 @@ const smtpConfig = {
 var transporter = nodemailer.createTransport(smtpConfig);
 
 class Mailer {
-    static async sendMail(replyTo,mailTo,subject,mailContent){
-        const mailOptions = {
+    static async sendMail(replyTo,mailTo,subject,mailContent, attachments){
+        let mailOptions = {
             from: 'Sweat Jobs <'+process.env.SMTP_USER+'>',
             to: mailTo,
             subject: subject,
             html: mailContent,
             replyTo: replyTo
+        }
+        console.log('no');
+        if(attachments.length > 0){
+            console.log('yea');
+            mailOptions['attachments'] = attachments;
         }
         transporter.sendMail(mailOptions, function(error, info){
             if (error) {

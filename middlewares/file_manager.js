@@ -24,6 +24,11 @@ class FileManager {
         }
         return imageUrlString;
     }
+
+    static readFile(url){
+        const file = fs.readFileSync(url)
+        return file;
+    }
 }
 
 module.exports = FileManager;

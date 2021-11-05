@@ -3,6 +3,7 @@ const router = express.Router();
 const { Job, JobTranslation, Language, User, Category, CategoryTranslation, Profile, UserAppliedToJob } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 const FileManager = require('../middlewares/file_manager');
+const Mailer = require('../classes/mailer');
 
 router.get('/public/getJobsByCategoryId/:id', async (req, res) => {
     try {
@@ -103,13 +104,27 @@ router.post('/public/userApplyToJob', async (req, res) => {
         if (email == 'forbidden') {
             return res.sendStatus(403);
         }
-        let userRow = await User.findOne({ where: { email: email } });
+        const userRow = await User.findOne({ where: { email: email }, include: Profile });
         let userAppliedJobRow = await UserAppliedToJob.findOne({where: {userId: userRow.id, jobId: jobId}});
         if(userAppliedJobRow){
             return res.send({ error: 'userAlreadyApplied' });
         }else{
             await UserAppliedToJob.create({userId: userRow.id, jobId});
         }
+        const jobRow = await Job.findOne({where: {id: jobId}, include: [JobTranslation,User]});
+        const huLanguage = await Language.findOne({where: {key: process.env.DEFAULT_LANGUAGE_KEY}});
+        let fileUrl;
+        let fileName;
+        if(userRow.Profile.cvPath){
+            fileName = userRow.Profile.cvPath.substr(userRow.Profile.cvPath.lastIndexOf("/") + 1);
+            fileUrl = './public/users/'+userRow.Profile.cvPath.replace(process.env.DOMAIN_NAME, '');
+        }
+        const fromEmail = userRow.email;
+        const toEmail = jobRow.User.email;
+        const huTranslation = jobRow.JobTranslations.find(element=>element.languageId == huLanguage.id);
+        const mailSubject = 'Az '+huTranslation.title+' állásra '+userRow.firstName+ ' '+userRow.lastName+' nevű felhasználó jelentkezett';
+        const mailMessage = 'Ha a felhasználónak van feltöltött önéletrajza, a csatlományok között megtalálja, ha nincs, vegye fel vele a kapcsolatot emailben, vagy nézze meg oldalunkon az adatait további információért.'
+        await Mailer.sendMail(fromEmail, toEmail, mailSubject, mailMessage, [{filename: fileName, path: fileUrl, contentType: 'application/pdf'}]);
         return res.send({ status: 'ok' });
     } catch (error) {
         console.log(error);

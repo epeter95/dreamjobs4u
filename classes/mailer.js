@@ -20,7 +20,7 @@ var transporter = nodemailer.createTransport(smtpConfig);
 class Mailer {
     static async sendMail(replyTo,mailTo,subject,mailContent){
         const mailOptions = {
-            from: process.env.SMTP_USER,
+            from: 'Sweat Jobs <'+process.env.SMTP_USER+'>',
             to: mailTo,
             subject: subject,
             html: mailContent,

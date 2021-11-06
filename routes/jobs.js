@@ -44,7 +44,7 @@ router.get('/public/getJobById/:id', async (req, res) => {
     }
 });
 
-router.get('/public/getJobsByToken', async (req, res) => {
+router.get('/public/getJobsByTokenWithAppliedUsers', async (req, res) => {
     try {
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
         if (email == 'forbidden') {
@@ -54,7 +54,13 @@ router.get('/public/getJobsByToken', async (req, res) => {
         const data = await Job.findAll({
             include: [JobTranslation, { model: Category, include: CategoryTranslation }]
         }, { where: { userId: userData.id } });
-        return res.send(data);
+        let result = [];
+        for(let i=0;i<data.length;++i){
+            const appliedUsers = await UserAppliedToJob.findAll({where: {jobId: data[i].id}, include: {model: User, attributes: ['id','firstName', 'lastName', 'email'], include: Profile}})
+            let resultElement = {jobData: data[i], appliedUsers: appliedUsers};
+            result.push(resultElement);
+        }
+        return res.send(result);
     } catch (error) {
         console.log(error);
         return res.send({ error: error.name });

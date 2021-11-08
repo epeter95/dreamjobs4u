@@ -27,6 +27,8 @@ var categoryTranslationRouter = require('./routes/category_translations');
 var profileRouter = require('./routes/profiles');
 var jobRouter = require('./routes/jobs');
 var jobTranslationRouter = require('./routes/job_translations');
+var appliedUserStatusRouter = require('./routes/applied_user_statuses');
+var appliedUserStatusTranslationRouter = require('./routes/applied_user_status_translations');
 var contactRouter = require('./routes/contacts');
 //--------------------------------//
 
@@ -68,6 +70,8 @@ app.use('/api/profiles', profileRouter);
 app.use('/api/jobs', jobRouter);
 app.use('/api/jobTranslations', jobTranslationRouter);
 app.use('/api/contacts', contactRouter);
+app.use('/api/appliedUserStatuses', appliedUserStatusRouter);
+app.use('/api/appliedUserStatusTranslations', appliedUserStatusTranslationRouter);
 // //---------------------------//
 
 // catch 404 and forward to error handler

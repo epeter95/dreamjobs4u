@@ -26,11 +26,20 @@ module.exports = (sequelize, DataTypes) => {
       UserAppliedToJob.belongsTo(models.Job, {
         foreignKey: 'jobId',
       });
+      models.AppliedUserStatus.hasMany(UserAppliedToJob, {
+        foreignKey: 'appliedUserStatusId',
+        onDelete: 'RESTRICT',
+        onUpdate: 'RESTRICT'
+      });
+      UserAppliedToJob.belongsTo(models.AppliedUserStatus, {
+        foreignKey: 'appliedUserStatusId',
+      });
     }
   };
   UserAppliedToJob.init({
     userId: DataTypes.INTEGER,
-    jobId: DataTypes.INTEGER
+    jobId: DataTypes.INTEGER,
+    appliedUserStatusId: DataTypes.INTEGER
   }, {
     sequelize,
     tableName: 'user_applied_to_jobs',

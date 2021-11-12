@@ -33,7 +33,11 @@ module.exports = (sequelize, DataTypes) => {
     companyName: DataTypes.STRING,
     logoUrl: DataTypes.STRING,
     companyWebsite: DataTypes.STRING,
-    jobLocation: DataTypes.STRING
+    jobLocation: DataTypes.STRING,
+    showOnMainPage: {
+      type:DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {
     sequelize,
     tableName: 'jobs',

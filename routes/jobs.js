@@ -110,7 +110,7 @@ router.get('/public/getJobDropdwonDataByToken', async (req, res) => {
     }
 });
 
-router.get('/public/isUserAppliedToJob/:id', async (req, res) =>{
+router.get('/public/isUserAppliedToJob/:id', async (req, res) => {
     try {
         const jobId = req.params.id;
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
@@ -118,11 +118,11 @@ router.get('/public/isUserAppliedToJob/:id', async (req, res) =>{
             return res.sendStatus(403);
         }
         const userData = await User.findOne({ where: { email: email } });
-        const userExist = await UserAppliedToJob.findOne({where: {userId: userData.id, jobId: jobId}});
-        if(userExist){
-            return res.send({exist: true});
+        const userExist = await UserAppliedToJob.findOne({ where: { userId: userData.id, jobId: jobId } });
+        if (userExist) {
+            return res.send({ exist: true });
         }
-        return res.send({exist: false});
+        return res.send({ exist: false });
     } catch (error) {
         console.log(error);
         return res.send({ error: error.name });
@@ -130,8 +130,8 @@ router.get('/public/isUserAppliedToJob/:id', async (req, res) =>{
 });
 
 
-router.post('/public/userRemoveFromJob', async (req,res)=>{
-    try{
+router.post('/public/userRemoveFromJob', async (req, res) => {
+    try {
         const { jobId } = req.body;
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
         if (email == 'forbidden') {
@@ -147,10 +147,10 @@ router.post('/public/userRemoveFromJob', async (req,res)=>{
         const mailSubject = 'Az ' + huTranslation.title + ' állásról ' + userRow.firstName + ' ' + userRow.lastName + ' nevű felhasználó visszavonta a jelentkezését';
         const mailMessage = 'Sajnáljuk, de a címben említett felhasználó visszavonta a jelentkezését a hirdetett állásról.';
         await Mailer.sendMail(fromEmail, toEmail, mailSubject, mailMessage, []);
-        return res.send({ok: 'siker'});
-    }catch(error){
+        return res.send({ ok: 'siker' });
+    } catch (error) {
         console.log(error);
-        return res.send({error: error.name});
+        return res.send({ error: error.name });
     }
 });
 
@@ -303,7 +303,7 @@ router.delete('/public/deleteJob/:id', async (req, res) => {
             return res.sendStatus(403);
         } else {
             const jobData = await Job.findOne({ where: { id: paramId }, include: User });
-            if(jobData.User.email != email){
+            if (jobData.User.email != email) {
                 return res.sendStatus(403);
             }
         }
@@ -349,11 +349,11 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const {
             userId, companyName, logoUrl, companyWebsite,
-            jobLocation, title, aboutUs, jobDescription,
+            jobLocation, title, aboutUs, jobDescription, showOnMainPage,
             payment, jobType, experience, qualification,
             language
         } = req.body;
-        const data = await Job.create({ userId, companyName, logoUrl, jobLocation, companyWebsite });
+        const data = await Job.create({ userId, companyName, logoUrl, jobLocation, companyWebsite, showOnMainPage });
         const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         const translationData = await JobTranslation.create({
             jobId: data.id, languageId: hunLanguage.id, title,
@@ -371,8 +371,8 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
 router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
-        const { userId, companyName, companyWebsite, logoUrl, jobLocation } = req.body;
-        const data = await Job.update({ userId, companyName, companyWebsite, logoUrl, jobLocation }, {
+        const { userId, companyName, companyWebsite, logoUrl, jobLocation, showOnMainPage } = req.body;
+        const data = await Job.update({ userId, companyName, companyWebsite, logoUrl, jobLocation, showOnMainPage }, {
             where: { id: paramId },
         });
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, Role, Profile, Category, CategoryTranslation, UserAppliedToJob } = require('../db/models');
+const { User, Role, Profile, Category, CategoryTranslation, UserAppliedToJob, Job } = require('../db/models');
 const bcrypt = require('bcrypt');
 const JWTManager = require('../middlewares/jwt_manager');
 const FileManager = require('../middlewares/file_manager');
@@ -38,6 +38,23 @@ router.get('/getUserDataWithCategoriesForPublic', async (req, res) => {
     return res.send({ error: error.name });
   }
 });
+
+router.get('/public/preferredCategories', async (req,res)=>{
+  try{
+    const email = JWTManager.getEmailByToken(req.headers['authorization']);
+    if (email == 'forbidden') {
+      return res.sendStatus(403);
+    }
+    const userData = await User.findOne({
+      where: { email: email },
+      attributes: ['id'],
+      include: { model: Category, include: [CategoryTranslation, Job] }
+    });
+    return res.send(userData);
+  }catch(error){
+    return res.send({error: error.name});
+  }
+})
 
 router.post('/public/modifyUserData', async (req, res) => {
   try {

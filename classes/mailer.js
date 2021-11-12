@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const fs = require('fs');
 
 const smtpConfig = {
     host: process.env.SMTP_HOST,
@@ -18,7 +19,7 @@ const smtpConfig = {
 var transporter = nodemailer.createTransport(smtpConfig);
 
 class Mailer {
-    static async sendMail(replyTo,mailTo,subject,mailContent, attachments){
+    static async sendMail(replyTo,mailTo,subject,mailContent, attachments, filePath){
         let mailOptions = {
             from: 'Sweat Jobs <'+process.env.SMTP_USER+'>',
             to: mailTo,
@@ -36,6 +37,9 @@ class Mailer {
               console.log(error);
             } else {
               console.log('Email sent: ' + info.response);
+            }
+            if(filePath){
+                fs.unlinkSync(filePath);
             }
         });
     }

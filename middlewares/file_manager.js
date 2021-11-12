@@ -25,6 +25,16 @@ class FileManager {
         return imageUrlString;
     }
 
+    static createFileTmp(req, attribute){
+        let tmpPath = '';
+        if (req.files && req.files[attribute]) {
+            const fileData = req.files[attribute];
+            tmpPath = './public/tmp/' + fileData.name;
+            fs.writeFile(tmpPath, fileData.data, {}, () => {});
+        } 
+        return tmpPath;
+    }
+
     static readFile(url){
         const file = fs.readFileSync(url)
         return file;

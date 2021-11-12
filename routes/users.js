@@ -1,13 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { User, Role, Profile, Category, CategoryTranslation } = require('../db/models');
+const { User, Role, Profile, Category, CategoryTranslation, UserAppliedToJob } = require('../db/models');
 const bcrypt = require('bcrypt');
 const JWTManager = require('../middlewares/jwt_manager');
+const FileManager = require('../middlewares/file_manager');
+const Mailer = require('../classes/mailer');
 
 router.get('/getDataForPublic', async (req, res) => {
   try {
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
-    if(email == 'forbidden'){
+    if (email == 'forbidden') {
       return res.sendStatus(403);
     }
     const userData = await User.findOne({ where: { email: email }, include: Profile });
@@ -22,13 +24,13 @@ router.get('/getDataForPublic', async (req, res) => {
 router.get('/getUserDataWithCategoriesForPublic', async (req, res) => {
   try {
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
-    if(email == 'forbidden'){
+    if (email == 'forbidden') {
       return res.sendStatus(403);
     }
     const userData = await User.findOne({
       where: { email: email },
       attributes: ['email', 'firstName', 'lastName'],
-      include: {model: Category, include: CategoryTranslation}
+      include: { model: Category, include: CategoryTranslation }
     });
     return res.send(userData);
   } catch (error) {
@@ -40,7 +42,7 @@ router.get('/getUserDataWithCategoriesForPublic', async (req, res) => {
 router.post('/public/modifyUserData', async (req, res) => {
   try {
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
-    if(email == 'forbidden'){
+    if (email == 'forbidden') {
       return res.sendStatus(403);
     }
     const { firstName, lastName } = req.body;
@@ -55,24 +57,52 @@ router.post('/public/modifyUserData', async (req, res) => {
   }
 });
 
+router.post('/public/sendAnswerToAppliedUser', async (req, res) => {
+  try {
+    const email = JWTManager.getEmailByToken(req.headers['authorization']);
+    if (email == 'forbidden') {
+      return res.sendStatus(403);
+    }
+    const { message, toEmail, jobName, jobCompany, appliedUserStatusId, jobId, userId } = req.body;
+    let fileData;
+    let fileName;
+    let filePath;
+    if (req.files && req.files['fileData']) {
+      console.log("van fájl");
+      fileData = req.files['fileData'];
+      fileName = fileData.name;
+      filePath = FileManager.createFileTmp(req,'fileData');
+    }
+    await UserAppliedToJob.update({ appliedUserStatusId }, {
+      where: { jobId: jobId, userId: userId },
+    });
+    console.log(filePath);
+    const mailSubject = 'Válasz a ' + jobName + '( ' + jobCompany + ' ) állás jelentkezésre';
+    await Mailer.sendMail(email, toEmail, mailSubject, message, [{ filename: fileName, path: filePath }], filePath);
+    return res.send({ status: 'ok' });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 router.post('/public/addUserCategories', async (req, res) => {
-  try{
+  try {
     let categories = req.body.categories;
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
-    if(email == 'forbidden'){
+    if (email == 'forbidden') {
       return res.sendStatus(403);
     }
     console.log(email);
-    let userRow = await User.findOne({where: {email: email}});
+    let userRow = await User.findOne({ where: { email: email } });
     console.log(userRow);
     await userRow.setCategories([]);
     console.log("categories removed");
-    for(let i=0;i<categories.length;++i){
-      const categoryRow = await Category.findOne({where: {id: categories[i].id}});
+    for (let i = 0; i < categories.length; ++i) {
+      const categoryRow = await Category.findOne({ where: { id: categories[i].id } });
       await userRow.addCategory(categoryRow);
     }
-    return res.send({status: 'ok'});
-  }catch(error){
+    return res.send({ status: 'ok' });
+  } catch (error) {
     console.log(error);
   }
 });
@@ -81,7 +111,7 @@ router.post('/public/addUserCategories', async (req, res) => {
 router.post('/public/changePassword', async (req, res) => {
   try {
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
-    if(email == 'forbidden'){
+    if (email == 'forbidden') {
       return res.sendStatus(403);
     }
     const { currentPassword, password } = req.body;
@@ -89,9 +119,9 @@ router.post('/public/changePassword', async (req, res) => {
     const isAuthenticated = await bcrypt.compare(currentPassword, data.password)
     if (!isAuthenticated) {
       return res.sendStatus(401);
-    }else{
+    } else {
       const hashedPassword = await hashPassword(password);
-      const updateData = await User.update({password: hashedPassword},{ where: { email: email } });
+      const updateData = await User.update({ password: hashedPassword }, { where: { email: email } });
       return res.send({ ok: 'siker' });
     }
   } catch (error) {

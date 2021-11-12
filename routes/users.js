@@ -78,7 +78,11 @@ router.post('/public/sendAnswerToAppliedUser', async (req, res) => {
     });
     console.log(filePath);
     const mailSubject = 'Válasz a ' + jobName + '( ' + jobCompany + ' ) állás jelentkezésre';
-    await Mailer.sendMail(email, toEmail, mailSubject, message, [{ filename: fileName, path: filePath }], filePath);
+    if(filePath){
+      await Mailer.sendMail(email, toEmail, mailSubject, message, [{ filename: fileName, path: filePath }], filePath);
+    }else{
+      await Mailer.sendMail(email, toEmail, mailSubject, message, [], '');
+    }
     return res.send({ status: 'ok' });
   } catch (error) {
     console.log(error);

@@ -61,7 +61,7 @@ router.get('/public/getJobsByTokenWithAppliedUsers', async (req, res) => {
                 where: { jobId: data[i].id },
                 include: [
                     { model: User, attributes: ['id', 'firstName', 'lastName', 'email'], include: Profile },
-                    { model: AppliedUserStatus, include: AppliedUserStatusTranslation}
+                    { model: AppliedUserStatus, include: AppliedUserStatusTranslation }
                 ]
             });
             let resultElement = { jobData: data[i], appliedUsers: appliedUsers };
@@ -249,6 +249,28 @@ router.put('/public/modifyJob/:id', async (req, res) => {
         console.log(error);
         return res.send({ error: error.name });
     }
+});
+
+router.delete('/public/deleteJob/:id', async (req, res) => {
+    try {
+        const paramId = req.params.id;
+        const email = JWTManager.getEmailByToken(req.headers['authorization']);
+        if (email == 'forbidden') {
+            return res.sendStatus(403);
+        } else {
+            const jobData = await Job.findOne({ where: { id: paramId }, include: User });
+            if(jobData.User.email != email){
+                return res.sendStatus(403);
+            }
+        }
+        const data = await Job.destroy({
+            where: { id: paramId }
+        });
+    } catch (error) {
+        console.log(error);
+        return res.send({ error: error.name });
+    }
+    return res.send({ ok: 'siker' });
 });
 
 router.get('/', JWTManager.verifyAdminUser, async (req, res) => {

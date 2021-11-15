@@ -321,6 +321,9 @@ router.delete('/public/deleteJob/:id', async (req, res) => {
             if (jobData.User.email != email) {
                 return res.sendStatus(403);
             }
+            const directoryName = jobData.User.id + '/jobs/' + req.params.id;
+            const directoryRoot = './public/users/' + directoryName;
+            FileManager.deleteFile(directoryRoot);
         }
         const data = await Job.destroy({
             where: { id: paramId }
@@ -363,12 +366,15 @@ router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
 router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const {
-            userId, companyName, logoUrl, companyWebsite,
+            userId, companyName, companyWebsite,
             jobLocation, title, aboutUs, jobDescription, showOnMainPage,
             payment, jobType, experience, qualification,
             language
         } = req.body;
-        const data = await Job.create({ userId, companyName, logoUrl, jobLocation, companyWebsite, showOnMainPage });
+        const directoryName = userId + '/jobs/' + req.params.id;
+        const directoryRoot = './public/users/' + directoryName;
+        const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'logoUrl');
+        const data = await Job.create({ userId, companyName, logoUrl: imageUrlString, jobLocation, companyWebsite, showOnMainPage });
         const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         const translationData = await JobTranslation.create({
             jobId: data.id, languageId: hunLanguage.id, title,
@@ -386,8 +392,11 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
 router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
-        const { userId, companyName, companyWebsite, logoUrl, jobLocation, showOnMainPage } = req.body;
-        const data = await Job.update({ userId, companyName, companyWebsite, logoUrl, jobLocation, showOnMainPage }, {
+        const { userId, companyName, companyWebsite, jobLocation, showOnMainPage } = req.body;
+        const directoryName = userId + '/jobs/' + req.params.id;
+        const directoryRoot = './public/users/' + directoryName;
+        const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'logoUrl');
+        const data = await Job.update({ userId, companyName, companyWebsite, logoUrl: imageUrlString, jobLocation, showOnMainPage }, {
             where: { id: paramId },
         });
 
@@ -401,6 +410,10 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
 router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
+        const job = await Job.findOne({where: {id: paramId}, include: User});
+        const directoryName = job.User.id + '/jobs/' + req.params.id;
+        const directoryRoot = './public/users/' + directoryName;
+        FileManager.deleteFile(directoryRoot);
         const data = await Job.destroy({
             where: { id: paramId }
         });

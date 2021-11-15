@@ -39,6 +39,10 @@ class FileManager {
         const file = fs.readFileSync(url)
         return file;
     }
+
+    static deleteFile(url){
+        fs.rmSync( url, { recursive: true, force: true });
+    }
 }
 
 module.exports = FileManager;

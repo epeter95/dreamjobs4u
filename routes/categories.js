@@ -3,6 +3,7 @@ const router = express.Router();
 const { Category, CategoryTranslation, Language, Job } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 const Sequelize = require('sequelize');
+const FileManager = require('../middlewares/file_manager');
 
 router.get('/public', async (req, res) => {
   try {
@@ -48,6 +49,11 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const { key, adminName, text } = req.body;
     const data = await Category.create({ key, adminName });
+    const directoryName = data.id;
+    const directoryRoot = './public/categories/' + directoryName;
+    const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'pictureUrl');
+    data.pictureUrl = imageUrlString;
+    data.save();
     const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
     const translationData = await CategoryTranslation.create({ categoryId: data.id, languageId: hunLanguage.id, text });
     return res.send({ ok: 'siker' });
@@ -61,7 +67,10 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
     const { key, adminName } = req.body;
-    const data = await Category.update({ key, adminName }, {
+    const directoryName = paramId;
+    const directoryRoot = './public/categories/' + directoryName;
+    const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'pictureUrl');
+    const data = await Category.update({ key, adminName, pictureUrl: imageUrlString }, {
       where: { id: paramId },
     });
 
@@ -75,6 +84,9 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
 router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
+    const directoryName = data.id;
+    const directoryRoot = './public/categories/' + directoryName;
+    FileManager.deleteFile(directoryRoot);
     const data = await Category.destroy({
       where: { id: paramId }
     });

@@ -131,7 +131,6 @@ router.get('/public/isUserAppliedToJob/:id', async (req, res) => {
 
 router.get('/public/getAppliedJobsByToken', async (req, res) => {
     try {
-        const jobId = req.params.id;
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
         if (email == 'forbidden') {
             return res.sendStatus(403);

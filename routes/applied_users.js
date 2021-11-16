@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { UserAppliedToJob, Job, User } = require('../db/models');
+const { UserAppliedToJob, Job, User, AppliedUserStatus } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 
 router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
-        const data = await UserAppliedToJob.findAll({include: [Job,User]});
+        const data = await UserAppliedToJob.findAll({ include: [Job, User, AppliedUserStatus] });
         return res.send(data);
     } catch (error) {
         console.log(error);
@@ -20,7 +20,7 @@ router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
         if (paramId) {
             data = await UserAppliedToJob.findOne({
                 where: { id: paramId },
-                include: [Job,User]
+                include: [Job, User, AppliedUserStatus]
             });
         }
         return res.send(data);
@@ -32,8 +32,8 @@ router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
 
 router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
-        const { userId, jobId } = req.body;
-        const data = await UserAppliedToJob.create({ userId, jobId });
+        const { userId, jobId, appliedUserStatusId } = req.body;
+        const data = await UserAppliedToJob.create({ userId, jobId, appliedUserStatusId });
         return res.send({ ok: 'siker' });
     } catch (error) {
         console.log(error);
@@ -44,8 +44,8 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
 router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
-        const { userId, jobId } = req.body;
-        const data = await UserAppliedToJob.update({ userId, jobId }, {
+        const { userId, jobId, appliedUserStatusId } = req.body;
+        const data = await UserAppliedToJob.update({ userId, jobId, appliedUserStatusId }, {
             where: { id: paramId },
         });
 

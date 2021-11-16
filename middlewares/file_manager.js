@@ -4,7 +4,7 @@ const JWTManager = require('../middlewares/jwt_manager');
 
 class FileManager {
 
-    static async handleFileUpload(req, directoryPath, directoryName, fileAttribute) {
+    static async handleFileUpload(req, directoryPath, directoryName, fileAttribute, isDeleteNeeded) {
         let imageUrlString = '';
         if (req.files && req.files[fileAttribute]) {
             const fileData = req.files[fileAttribute];
@@ -20,7 +20,9 @@ class FileManager {
             });
             imageUrlString = process.env.DOMAIN_NAME + directoryName + '/' + fileData.name;
         } else {
-            fs.rmdirSync( directoryPath, { recursive: true });
+            if(isDeleteNeeded){
+                fs.rmdirSync( directoryPath, { recursive: true });
+            }
         }
         return imageUrlString;
     }

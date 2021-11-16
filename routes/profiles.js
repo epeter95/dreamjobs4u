@@ -36,12 +36,21 @@ router.post('/public/modifyProfileData', async (req, res) => {
     const directoryName = userData.id + '/user_cv';
     const directoryRoot = './public/users/' + directoryName;
     const cvPath = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'cvPath');
-    const profileData = await Profile.update({
-      jobTitle, age, currentSalary, expectedSalary, description,
-      country, city, zipcode, phone, address,cvPath
-    },
-      { where: { userId: userData.id }, }
-    );
+    if(cvPath){
+      const profileData = await Profile.update({
+        jobTitle, age, currentSalary, expectedSalary, description,
+        country, city, zipcode, phone, address,cvPath
+      },
+        { where: { userId: userData.id }, }
+      );
+    }else{
+      const profileData = await Profile.update({
+        jobTitle, age, currentSalary, expectedSalary, description,
+        country, city, zipcode, phone, address
+      },
+        { where: { userId: userData.id }, }
+      );
+    }
     return res.send({ ok: 'siker' });
   } catch (error) {
     console.log(error);
@@ -58,7 +67,7 @@ router.post('/public/editProfilePicture', async (req, res) => {
     const userData = await User.findOne({ where: { email: email } });
     const directoryName = userData.id + '/profile_pictures';
     const directoryRoot = './public/users/' + directoryName;
-    const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'profilePictureUrl');
+    const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'profilePictureUrl',true);
     const profileData = await Profile.update({ profilePicture: imageUrlString }, { where: { userId: userData.id } })
     return res.send({ ok: 'siker' });
   } catch (error) {

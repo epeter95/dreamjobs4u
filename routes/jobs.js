@@ -129,6 +129,21 @@ router.get('/public/isUserAppliedToJob/:id', async (req, res) => {
     }
 });
 
+router.get('/public/getAppliedUsersByJobId/:id', async (req, res) => {
+    try{
+        const jobId = req.params.id;
+        const email = JWTManager.getEmailByToken(req.headers['authorization']);
+        if (email == 'forbidden') {
+            return res.sendStatus(403);
+        }
+        const appliedJobs = await UserAppliedToJob.findAll({ where: { jobId: jobId}, include: {model: User, attributes: ['firstName','lastName']} });
+        return res.send(appliedJobs);
+    }catch(error){
+        console.log(error);
+        return res.send({error: error});
+    }
+})
+
 router.get('/public/getAppliedJobsByToken', async (req, res) => {
     try {
         const email = JWTManager.getEmailByToken(req.headers['authorization']);

@@ -130,17 +130,17 @@ router.get('/public/isUserAppliedToJob/:id', async (req, res) => {
 });
 
 router.get('/public/getAppliedUsersByJobId/:id', async (req, res) => {
-    try{
+    try {
         const jobId = req.params.id;
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
         if (email == 'forbidden') {
             return res.sendStatus(403);
         }
-        const appliedJobs = await UserAppliedToJob.findAll({ where: { jobId: jobId}, include: {model: User, attributes: ['id','firstName','lastName']} });
+        const appliedJobs = await UserAppliedToJob.findAll({ where: { jobId: jobId }, include: { model: User, attributes: ['id', 'firstName', 'lastName'] } });
         return res.send(appliedJobs);
-    }catch(error){
+    } catch (error) {
         console.log(error);
-        return res.send({error: error});
+        return res.send({ error: error });
     }
 })
 
@@ -151,7 +151,7 @@ router.get('/public/getAppliedJobsByToken', async (req, res) => {
             return res.sendStatus(403);
         }
         const userData = await User.findOne({ where: { email: email } });
-        const appliedJobs = await UserAppliedToJob.findAll({ where: { userId: userData.id}, include: {model: Job, include: [JobTranslation, {model: Category, include: CategoryTranslation}]} });
+        const appliedJobs = await UserAppliedToJob.findAll({ where: { userId: userData.id }, include: { model: Job, include: [JobTranslation, { model: Category, include: CategoryTranslation }] } });
         return res.send(appliedJobs);
     } catch (error) {
         console.log(error);
@@ -299,24 +299,28 @@ router.put('/public/modifyJob/:id', async (req, res) => {
             experience: hunExperience, qualification: hunQualification,
             language: hunLanguage
         }, { where: { jobId: req.params.id, languageId: hunLanguageElement.id } });
-        const enLanguageElement = await Language.findOne({ where: { key: process.env.ENGLISH_LANGUAGE_KEY } });
-        const enTranslation = await JobTranslation.findOne({ where: { jobId: req.params.id, languageId: enLanguageElement.id } });
-        if (enTranslation) {
-            await JobTranslation.update({
-                title: enTitle, aboutUs: enAboutUs,
-                jobDescription: enJobDescription,
-                payment: enPayment, jobType: enJobType,
-                experience: enExperience, qualification: enQualification,
-                language: enLanguage
-            }, { where: { id: enTranslation.id } });
-        } else {
-            await JobTranslation.create({
-                jobId: req.params.id, languageId: enLanguageElement.id, title: enTitle,
-                aboutUs: enAboutUs, jobDescription: enJobDescription,
-                payment: enPayment, jobType: enJobType,
-                experience: enExperience, qualification: enQualification,
-                language: enLanguage
-            });
+        if (enTitle || enAboutUs || enJobDescription
+            || enPayment || enJobType || enExperience ||
+            enQualification || enLanguage) {
+            const enLanguageElement = await Language.findOne({ where: { key: process.env.ENGLISH_LANGUAGE_KEY } });
+            const enTranslation = await JobTranslation.findOne({ where: { jobId: req.params.id, languageId: enLanguageElement.id } });
+            if (enTranslation) {
+                await JobTranslation.update({
+                    title: enTitle, aboutUs: enAboutUs,
+                    jobDescription: enJobDescription,
+                    payment: enPayment, jobType: enJobType,
+                    experience: enExperience, qualification: enQualification,
+                    language: enLanguage
+                }, { where: { id: enTranslation.id } });
+            } else {
+                await JobTranslation.create({
+                    jobId: req.params.id, languageId: enLanguageElement.id, title: enTitle,
+                    aboutUs: enAboutUs, jobDescription: enJobDescription,
+                    payment: enPayment, jobType: enJobType,
+                    experience: enExperience, qualification: enQualification,
+                    language: enLanguage
+                });
+            }
         }
         return res.send({ ok: 'siker' });
     } catch (error) {
@@ -425,7 +429,7 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
 router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
-        const job = await Job.findOne({where: {id: paramId}, include: User});
+        const job = await Job.findOne({ where: { id: paramId }, include: User });
         const directoryName = job.User.id + '/jobs/' + req.params.id;
         const directoryRoot = './public/users/' + directoryName;
         FileManager.deleteFile(directoryRoot);

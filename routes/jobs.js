@@ -136,7 +136,7 @@ router.get('/public/getAppliedUsersByJobId/:id', async (req, res) => {
         if (email == 'forbidden') {
             return res.sendStatus(403);
         }
-        const appliedJobs = await UserAppliedToJob.findAll({ where: { jobId: jobId}, include: {model: User, attributes: ['firstName','lastName']} });
+        const appliedJobs = await UserAppliedToJob.findAll({ where: { jobId: jobId}, include: {model: User, attributes: ['id','firstName','lastName']} });
         return res.send(appliedJobs);
     }catch(error){
         console.log(error);

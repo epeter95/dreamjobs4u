@@ -31,6 +31,7 @@ var appliedUserStatusRouter = require('./routes/applied_user_statuses');
 var appliedUserStatusTranslationRouter = require('./routes/applied_user_status_translations');
 var contactRouter = require('./routes/contacts');
 var usersAppliedToJobsRouter = require('./routes/applied_users');
+var eventsRouter = require('./routes/events');
 //--------------------------------//
 
 var app = express();
@@ -75,6 +76,7 @@ app.use('/api/contacts', contactRouter);
 app.use('/api/appliedUserStatuses', appliedUserStatusRouter);
 app.use('/api/appliedUserStatusTranslations', appliedUserStatusTranslationRouter);
 app.use('/api/usersAppliedToJobs', usersAppliedToJobsRouter);
+app.use('/api/events', eventsRouter);
 // //---------------------------//
 
 // catch 404 and forward to error handler

@@ -70,9 +70,15 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const directoryName = paramId;
     const directoryRoot = './public/categories/' + directoryName;
     const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'pictureUrl');
-    const data = await Category.update({ key, adminName, pictureUrl: imageUrlString }, {
-      where: { id: paramId },
-    });
+    if(imageUrlString){
+      const data = await Category.update({ key, adminName, pictureUrl: imageUrlString }, {
+        where: { id: paramId },
+      });
+    }else{
+      const data = await Category.update({ key, adminName }, {
+        where: { id: paramId },
+      });
+    }
 
     return res.send({ ok: 'siker' });
   } catch (error) {

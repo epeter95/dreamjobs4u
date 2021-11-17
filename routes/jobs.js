@@ -415,9 +415,15 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
         const directoryName = userId + '/jobs/' + req.params.id;
         const directoryRoot = './public/users/' + directoryName;
         const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'logoUrl');
-        const data = await Job.update({ userId, companyName, companyWebsite, logoUrl: imageUrlString, jobLocation, showOnMainPage }, {
-            where: { id: paramId },
-        });
+        if(imageUrlString){
+            const data = await Job.update({ userId, companyName, companyWebsite, logoUrl: imageUrlString, jobLocation, showOnMainPage }, {
+                where: { id: paramId },
+            });
+        }else{
+            const data = await Job.update({ userId, companyName, companyWebsite, jobLocation, showOnMainPage }, {
+                where: { id: paramId },
+            });
+        }
 
         return res.send({ ok: 'siker' });
     } catch (error) {

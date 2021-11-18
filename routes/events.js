@@ -18,6 +18,37 @@ router.get('/public/getEventsByToken', async (req, res) => {
     }
 });
 
+
+router.get('/public/getUserIdByToken', async (req, res) => {
+    try {
+        const email = JWTManager.getEmailByToken(req.headers['authorization']);
+        if (email == 'forbidden') {
+          return res.sendStatus(403);
+        }
+        const user = await User.findOne({where: {email: email}});
+        return res.send({userId: user.id});
+    }catch(error){
+        console.log(error);
+        return res.send({error: error.name});
+    }
+});
+
+router.get('/public/getEventByToken/:id', async (req, res) => {
+    try {
+        const eventId = req.params.id;
+        const email = JWTManager.getEmailByToken(req.headers['authorization']);
+        if (email == 'forbidden') {
+          return res.sendStatus(403);
+        }
+        const user = await User.findOne({where: {email: email}});
+        const data = await Event.findOne({ include: [{model: User, attributes: ['id','firstName','lastName','email']}], where:{id: eventId} });
+        return res.send(data);
+    } catch (error) {
+        console.log(error);
+        return res.send({ error: error.name });
+    }
+});
+
 router.post('/public/createEvent', async (req, res) => {
     try {
         const { jobId, users, startDate } = req.body;
@@ -28,7 +59,7 @@ router.post('/public/createEvent', async (req, res) => {
         console.log({jobId, users});
         const owner = await User.findOne({where: {email: email}});
         const date = new Date();
-        const link = 'event'+date.getTime();
+        const link = 'esemeny'+date.getTime();
         const data = await Event.create({ jobId, ownerId: owner.id, link, startDate });
         await data.setUsers([]);
         for (let i = 0; i < users.length; ++i) {

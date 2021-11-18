@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Event, User } = require('../db/models');
+const { Event, User, Job, JobTranslation,Profile } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 
 router.get('/public/getEventsByToken', async (req, res) => {
@@ -10,7 +10,7 @@ router.get('/public/getEventsByToken', async (req, res) => {
           return res.sendStatus(403);
         }
         const user = await User.findOne({where: {email: email}});
-        const data = await Event.findAll({ include: User, where:{ownerId: user.id} });
+        const data = await Event.findAll({ include: [{model: User, attributes: ['id','firstName','lastName'], include: Profile}, {model: Job, include: JobTranslation}], where:{ownerId: user.id} });
         return res.send(data);
     } catch (error) {
         console.log(error);
@@ -20,7 +20,7 @@ router.get('/public/getEventsByToken', async (req, res) => {
 
 router.post('/public/createEvent', async (req, res) => {
     try {
-        const { jobId, users } = req.body;
+        const { jobId, users, startDate } = req.body;
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
         if (email == 'forbidden') {
           return res.sendStatus(403);
@@ -29,7 +29,7 @@ router.post('/public/createEvent', async (req, res) => {
         const owner = await User.findOne({where: {email: email}});
         const date = new Date();
         const link = 'event'+date.getTime();
-        const data = await Event.create({ jobId, ownerId: owner.id, link});
+        const data = await Event.create({ jobId, ownerId: owner.id, link, startDate });
         await data.setUsers([]);
         for (let i = 0; i < users.length; ++i) {
           const userRow = await User.findOne({ where: { id: users[i] } });
@@ -40,6 +40,23 @@ router.post('/public/createEvent', async (req, res) => {
         console.log(error);
         return res.send({ error: error.name });
     }
+});
+
+router.delete('/public/delete/:id', async (req, res) => {
+    const paramId = req.params.id;
+    try {
+        const email = JWTManager.getEmailByToken(req.headers['authorization']);
+        if (email == 'forbidden') {
+          return res.sendStatus(403);
+        }
+        const data = await Event.destroy({
+            where: { id: paramId }
+        });
+    } catch (error) {
+        console.log(error);
+        return res.send({ error: error.name });
+    }
+    return res.send({ ok: 'siker' });
 });
 
 router.get('/', JWTManager.verifyAdminUser, async (req, res) => {

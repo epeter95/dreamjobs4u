@@ -10,7 +10,11 @@ module.exports = {
     port: process.env.DB_PORT,
     dialect: process.env.DB_DIALECT,
     dialectOptions: {
-      bigNumberStrings: true
+      bigNumberStrings: true,
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
     },
     logging: false,
     minifyAliases: true,
@@ -28,7 +32,11 @@ module.exports = {
     port: process.env.DB_PORT,
     dialect: process.env.DB_DIALECT,
     dialectOptions: {
-      bigNumberStrings: true
+      bigNumberStrings: true,
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
     },
     minifyAliases: true,
     pool: {
@@ -45,7 +53,11 @@ module.exports = {
     port: process.env.DB_PORT,
     dialect: process.env.DB_DIALECT,
     dialectOptions: {
-      bigNumberStrings: true
+      bigNumberStrings: true,
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
     },
     minifyAliases: true,
     pool: {

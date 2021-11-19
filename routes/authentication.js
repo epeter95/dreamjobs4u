@@ -30,11 +30,11 @@ router.post('/login', async (req, res) => {
             if(!isAuthenticated){
                 return res.sendStatus(401);
             }
-            if(data.role != 'admin'){
+            if(data.roleId != 2 && data.roleId != 3){
                 return res.sendStatus(403);
             }
             const privateKey = fs.readFileSync(process.env.JWT_SECRET_KEY, 'utf8');
-            const token = jwt.sign({ email: data.email, role: data.role }, privateKey, {algorithm: 'RS256'});
+            const token = jwt.sign({ email: data.email, role: data.roleId }, privateKey, {algorithm: 'RS256'});
             return res.send({token: token});
         }else{
             res.send({error: 'Nem létező felhasználó!'})

@@ -10,8 +10,9 @@ class JWTManager {
             if (token == null) return res.sendStatus(401);
             const publicKey = fs.readFileSync(process.env.JWT_SECRET_PUBLIC_KEY);
             jwt.verify(token, publicKey, { alrogithms: ['RS256'] }, (err, user) => {
+                console.log(user);
                 if (err) return res.sendStatus(401);
-                if (user.role != 'admin') return res.sendStatus(403);
+                if (user.roleId != 3 || user.roleId != 2) return res.sendStatus(403);
                 next();
             });
         } catch (ex) {

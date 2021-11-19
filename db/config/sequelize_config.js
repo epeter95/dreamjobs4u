@@ -11,10 +11,6 @@ module.exports = {
     dialect: process.env.DB_DIALECT,
     dialectOptions: {
       bigNumberStrings: true,
-      // ssl: {
-      //   require: true,
-      //   rejectUnauthorized: false
-      // }
     },
     logging: false,
     minifyAliases: true,

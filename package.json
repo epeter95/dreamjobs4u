@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "start": "node app.js",
+  "heroku-postbuild": "cp .env-prod .env",
   "keywords": [
     "example",
     "heroku"

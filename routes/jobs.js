@@ -27,7 +27,7 @@ router.get('/public', async (req, res) => {
         return res.send(data);
     } catch (error) {
         console.log(error);
-        return res.send({ error: error.name });
+        return res.send({ error: error });
     }
 });
 

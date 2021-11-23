@@ -19,6 +19,20 @@ router.get('/public/getJobsByCategoryId/:id', async (req, res) => {
     }
 });
 
+router.get('/facebook/:jobId', async (req, res) => {
+  try{
+      const jobId = req.params.jobId;
+      const job = await Job.findOne({where:{id: jobId}, attributes: ['companyName', 'logoUrl', 'jobLocation'], include: [JobTranslation, Category]});
+      const selectedLanguage = job.JobTranslations.find(element=>element.languageId == 1);
+      console.log(selectedLanguage);
+      let description = job.companyName+ ' '+ job.jobLocation;
+      const shareUrl = 'https://' + req.headers.host + '/kategoria/' + job.Category.id+'/allas/'+jobId;
+      return res.render('index', { shareUrl: shareUrl , title: selectedLanguage.title, url: 'https://' + req.headers.host + '/api/facebook/' + jobId, description: description, image: job.logoUrl });
+  }catch(error){
+      return res.sendStatus(404);
+  }
+});
+
 router.get('/public', async (req, res) => {
     try {
         const data = await Job.findAll({
@@ -107,18 +121,6 @@ router.get('/public/getJobDropdwonDataByToken', async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.send({ error: error.name });
-    }
-});
-
-router.get('/api/facebook/:jobId', async (req, res) => {
-    try{
-        const jobId = req.params.jobId;
-        const job = await Job.findOne({where:{id: jobId}, attributes: ['companyName', 'logoUrl', 'jobLocation'], include: [JobTranslation, Category]});
-        const selectedLanguage = job.JobTranslations.find(element=>element.languageId == 1);
-        let description = job.companyName+ ' '+ job.jobLocation;
-        res.render('index', { shareUrl: 'https://' + req.headers.host + '/kategoria/' + job.Category.id+'/allas/'+job.id + '/' + post[0].post_url, title: selectedLanguage.title, url: 'https://' + req.headers.host + '/api/facebook/' + jobId, description: description, image: job.logoUrl });
-    }catch(error){
-        return res.sendStatus(404);
     }
 });
 

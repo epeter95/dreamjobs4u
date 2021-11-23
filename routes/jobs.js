@@ -110,6 +110,18 @@ router.get('/public/getJobDropdwonDataByToken', async (req, res) => {
     }
 });
 
+router.get('/api/facebook/:jobId', async (req, res) => {
+    try{
+        const jobId = req.params.jobId;
+        const job = await Job.findOne({where:{id: jobId}, attributes: ['companyName', 'logoUrl', 'jobLocation'], include: [JobTranslation, Category]});
+        const selectedLanguage = job.JobTranslations.find(element=>element.languageId == 1);
+        let description = job.companyName+ ' '+ job.jobLocation;
+        res.render('index', { shareUrl: 'https://' + req.headers.host + '/kategoria/' + job.Category.id+'/allas/'+job.id + '/' + post[0].post_url, title: selectedLanguage.title, url: 'https://' + req.headers.host + '/api/facebook/' + jobId, description: description, image: job.logoUrl });
+    }catch(error){
+        return res.sendStatus(404);
+    }
+});
+
 router.get('/public/isUserAppliedToJob/:id', async (req, res) => {
     try {
         const jobId = req.params.id;
@@ -213,7 +225,11 @@ router.post('/public/userApplyToJob', async (req, res) => {
         const huTranslation = jobRow.JobTranslations.find(element => element.languageId == huLanguage.id);
         const mailSubject = 'Az ' + huTranslation.title + ' állásra ' + userRow.firstName + ' ' + userRow.lastName + ' nevű felhasználó jelentkezett';
         const mailMessage = 'Ha a felhasználónak van feltöltött önéletrajza, a csatlományok között megtalálja, ha nincs, vegye fel vele a kapcsolatot emailben, vagy nézze meg oldalunkon az adatait további információért.'
-        await Mailer.sendMail(fromEmail, toEmail, mailSubject, mailMessage, [{ filename: fileName, path: fileUrl, contentType: 'application/pdf' }]);
+        if (fileUrl) {
+            await Mailer.sendMail(fromEmail, toEmail, mailSubject, mailMessage, [{ filename: fileName, path: fileUrl, contentType: 'application/pdf' }]);
+        } else {
+            await Mailer.sendMail(fromEmail, toEmail, mailSubject, mailMessage, [{ filename: fileName, path: fileUrl, contentType: 'application/pdf' }]);
+        }
         return res.send({ status: 'ok' });
     } catch (error) {
         console.log(error);
@@ -415,11 +431,11 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
         const directoryName = userId + '/jobs/' + req.params.id;
         const directoryRoot = './public/users/' + directoryName;
         const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'logoUrl');
-        if(imageUrlString){
+        if (imageUrlString) {
             const data = await Job.update({ userId, companyName, companyWebsite, logoUrl: imageUrlString, jobLocation, showOnMainPage }, {
                 where: { id: paramId },
             });
-        }else{
+        } else {
             const data = await Job.update({ userId, companyName, companyWebsite, jobLocation, showOnMainPage }, {
                 where: { id: paramId },
             });

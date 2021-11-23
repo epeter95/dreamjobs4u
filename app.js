@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var favicon = require('serve-favicon');
 var dotenv = require("dotenv");
 var fileUpload = require('express-fileupload');
 dotenv.config();
@@ -38,7 +39,7 @@ var app = express();
 
 var cors = require('cors');
 app.use(cors());
-
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');

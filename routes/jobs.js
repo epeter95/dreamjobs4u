@@ -26,7 +26,7 @@ router.get('/facebook/:jobId', async (req, res) => {
       const selectedLanguage = job.JobTranslations.find(element=>element.languageId == 1);
       console.log(selectedLanguage);
       let description = job.companyName+ ' '+ job.jobLocation;
-      const shareUrl = 'https://' + req.headers.host + '/kategoria/' + job.Category.id+'/allas/'+jobId;
+      const shareUrl = 'https://sweetjobs.herokuapp.com/kategoria/' + job.Category.id+'/allas/'+jobId;
       return res.render('index', { shareUrl: shareUrl , title: selectedLanguage.title, url: 'https://' + req.headers.host + '/api/facebook/' + jobId, description: description, image: job.logoUrl });
   }catch(error){
       return res.sendStatus(404);

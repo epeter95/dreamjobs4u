@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Event, User, Job, JobTranslation,Profile } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
+const Mailer = require('../classes/mailer');
 
 router.get('/public/getEventsByToken', async (req, res) => {
     try {
@@ -64,6 +65,8 @@ router.post('/public/createEvent', async (req, res) => {
         await data.setUsers([]);
         for (let i = 0; i < users.length; ++i) {
           const userRow = await User.findOne({ where: { id: users[i] } });
+          const message = 'Tisztelt '+userRow.lastName+ ' '+ userRow.firstName+'. Ezúton értesítjük, hogy '+startDate+' időpontban esemény meghívást kapott. Amint elindult a videóhívás, emailben értesítjük a szükséges jelszóval a csatlakozáshoz.'
+          await Mailer.sendMail(email, userRow.email, 'Eseményre való meghívás', message, [], '');
           await data.addUser(userRow);
         }
         return res.send({ ok: 'siker' });

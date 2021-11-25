@@ -63,7 +63,7 @@ router.post('/public/sendLinkToUsers', async (req, res) => {
         for (let i = 0; i < users.length; ++i) {
           const userRow = await User.findOne({ where: { id: users[i] } });
           const message = 'Tisztelt '+userRow.lastName+ ' '+ userRow.firstName+'. Ezúton értesítjük, hogy '+responseDate+' időpontra megszervezett esemény elkezdődött.<br> Az eseményre való csatlakozáshoz az előző levélben szereplő linken az alábbi kulcsot kell beilleszteni: '+pwdId;
-          await Mailer.sendMail(email, userRow.email, 'Eseményre indulás', message, [], '');
+          await Mailer.sendMail(email, userRow.email, 'Esemény ('+event.link+') indulás', message, [], '');
           await data.addUser(userRow);
         }
         return res.send({ ok: 'siker' });
@@ -89,7 +89,7 @@ router.post('/public/createEvent', async (req, res) => {
         for (let i = 0; i < users.length; ++i) {
           const userRow = await User.findOne({ where: { id: users[i] } });
           const message = 'Tisztelt '+userRow.lastName+ ' '+ userRow.firstName+'. Ezúton értesítjük, hogy '+startDate+' időpontban esemény meghívást kapott. Amint elindult a videóhívás, emailben értesítjük a szükséges további teendőkről. Az esemény a következő címen lesz elérhető: <br> https://sweetjobs.herokuapp.com/video-esemeny/'+link
-          await Mailer.sendMail(email, userRow.email, 'Eseményre való meghívás', message, [], '');
+          await Mailer.sendMail(email, userRow.email, 'Esemény ('+link+')re való meghívás', message, [], '');
           await data.addUser(userRow);
         }
         return res.send({ ok: 'siker' });

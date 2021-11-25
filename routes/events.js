@@ -64,7 +64,6 @@ router.post('/public/sendLinkToUsers', async (req, res) => {
           const userRow = await User.findOne({ where: { id: users[i] } });
           const message = 'Tisztelt '+userRow.lastName+ ' '+ userRow.firstName+'. Ezúton értesítjük, hogy '+responseDate+' időpontra megszervezett esemény elkezdődött.<br> Az eseményre való csatlakozáshoz az előző levélben szereplő linken az alábbi kulcsot kell beilleszteni: '+pwdId;
           await Mailer.sendMail(email, userRow.email, 'Esemény ('+event.link+') indulás', message, [], '');
-          await data.addUser(userRow);
         }
         return res.send({ ok: 'siker' });
     } catch (error) {

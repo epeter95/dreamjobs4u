@@ -5,8 +5,8 @@
   "scripts": {
     "start": "node ./bin/www"
   },
+  "heroku-postbuild": "npx sequelize-cli db:migrate",
   "heroku-run-build-script": true,
-  "heroku-postbuild": "cp .env-prod .env",
   "start": "node app.js",
   "keywords": [
     "example",

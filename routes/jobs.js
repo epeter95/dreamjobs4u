@@ -165,7 +165,7 @@ router.get('/public/getAppliedJobsByToken', async (req, res) => {
             return res.sendStatus(403);
         }
         const userData = await User.findOne({ where: { email: email } });
-        const appliedJobs = await UserAppliedToJob.findAll({ where: { userId: userData.id }, include: { model: Job, include: [JobTranslation, { model: Category, include: CategoryTranslation }] } });
+        const appliedJobs = await UserAppliedToJob.findAll({ where: { userId: userData.id }, include: [{ model: Job, include: [JobTranslation, { model: Category, include: CategoryTranslation }]}, {model: AppliedUserStatus, include: AppliedUserStatusTranslation} ]});
         return res.send(appliedJobs);
     } catch (error) {
         console.log(error);

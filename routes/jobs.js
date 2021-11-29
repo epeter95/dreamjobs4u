@@ -106,7 +106,7 @@ router.get('/public/getJobByIdAndToken/:id', async (req, res) => {
     }
 });
 
-router.get('/public/getJobDropdwonDataByToken', async (req, res) => {
+router.get('/public/getJobDropdownDataByToken', async (req, res) => {
     try {
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
         if (email == 'forbidden') {
@@ -115,7 +115,7 @@ router.get('/public/getJobDropdwonDataByToken', async (req, res) => {
         const userData = await User.findOne({ where: { email: email } });
         const data = await Job.findAll({
             where: { userId: userData.id },
-            attributes: ['id', 'companyName']
+            attributes: ['id', 'companyName'], include: JobTranslation
         });
         return res.send(data);
     } catch (error) {

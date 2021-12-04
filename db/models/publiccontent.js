@@ -27,8 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       unique: true
     },
     adminName: DataTypes.STRING,
-    pagePlaceId: DataTypes.INTEGER,
-    link: DataTypes.STRING
+    pagePlaceId: DataTypes.INTEGER
   }, {
     sequelize,
     tableName: 'public_contents',

@@ -36,8 +36,8 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
 
 router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
   try {
-    const { key, adminName, pagePlaceId, link, title } = req.body;
-    const data = await PublicContent.create({ key, adminName, pagePlaceId, link });
+    const { key, adminName, pagePlaceId, title } = req.body;
+    const data = await PublicContent.create({ key, adminName, pagePlaceId });
     const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
     const translationData = await PublicContentTranslation.create({ publicContentId: data.id, languageId: hunLanguage.id, title });
     return res.send({ ok: 'siker' });
@@ -50,8 +50,8 @@ router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
 router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
-    const { key, adminName, pagePlaceId, link } = req.body;
-    const data = await PublicContent.update({ key, adminName, pagePlaceId, link }, {
+    const { key, adminName, pagePlaceId } = req.body;
+    const data = await PublicContent.update({ key, adminName, pagePlaceId }, {
       where: { id: paramId },
     });
 

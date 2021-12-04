@@ -151,17 +151,33 @@ router.post('/public/changePassword', async (req, res) => {
   }
 });
 
-router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
+router.get('/adminUsers', JWTManager.verifySuperAdminUser, async (req, res) => {
+  await getAllUserForAdmin(req,res, [2,3]);
+});
+
+router.get('/publicUsers', JWTManager.verifyAdminUser, async (req, res) => {
+  await getAllUserForAdmin(req,res, [4,5]);
+});
+
+async function getAllUserForAdmin(req,res, roleIds){
   try {
-    const data = await User.findAll({ include: Role });
+    const data = await User.findAll({ include: Role, where: {roleId: roleIds }});
     return res.send(data);
   } catch (error) {
     console.log(error);
     return res.send({ error: error.name });
   }
+}
+
+router.get('/adminUsers/:id', JWTManager.verifySuperAdminUser, async (req, res) => {
+  await getOneUserForAdmin(req,res);
 });
 
-router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
+router.get('/publicUsers/:id', JWTManager.verifyAdminUser, async (req, res) => {
+  await getOneUserForAdmin(req,res);
+});
+
+async function getOneUserForAdmin(req,res){
   const paramId = req.params.id;
   try {
     let data;
@@ -176,9 +192,17 @@ router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     console.log(error);
     return res.send({ error: error.name });
   }
+}
+
+router.post('/publicUsers', JWTManager.verifyAdminUser, async (req, res) => {
+  await postUser(req,res);
 });
 
-router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
+router.post('/adminUsers', JWTManager.verifySuperAdminUser, async (req, res) => {
+  await postUser(req,res);
+});
+
+async function postUser(req,res){
   try {
     const { firstName, lastName, email, password, roleId } = req.body;
     const hashedPassword = await hashPassword(password);
@@ -188,13 +212,21 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     console.log(error);
     return res.send({ error: error.name });
   }
-});
+}
 
 async function hashPassword(password) {
   return await bcrypt.hash(password, 10);
 }
 
-router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
+router.put('/adminUsers/:id', JWTManager.verifySuperAdminUser, async (req, res) => {
+  await putUser(req,res)
+});
+
+router.put('/publicUsers/:id', JWTManager.verifyAdminUser, async (req, res) => {
+  await putUser(req,res)
+});
+
+async function putUser(req,res){
   const paramId = req.params.id;
   try {
     const { firstName, lastName, email, password, roleId } = req.body;
@@ -208,19 +240,27 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     console.log(error);
     return res.send({ error: error.name });
   }
+}
+
+router.delete('/adminUsers/:id', JWTManager.verifySuperAdminUser, async (req, res) => {
+  await deleteUser(req,res)
 });
 
-router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
+router.delete('/publicUsers/:id', JWTManager.verifyAdminUser, async (req, res) => {
+  await deleteUser(req,res)
+});
+
+async function deleteUser(req,res){
   const paramId = req.params.id;
   try {
     const data = await User.destroy({
       where: { id: paramId }
     });
+    return res.send({ ok: 'siker' });
   } catch (error) {
     console.log(error);
     return res.send({ error: error.name });
   }
-  return res.send({ ok: 'siker' });
-});
+}
 
 module.exports = router;

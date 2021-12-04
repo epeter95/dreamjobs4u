@@ -31,6 +31,26 @@ router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
   }
 });
 
+router.get('/adminRoles', JWTManager.verifySuperAdminUser, async (req, res) => {
+  try {
+    const data = await Role.findAll({where: {id : 3}});
+    return res.send(data);
+  } catch (error) {
+    console.log(error);
+    return res.send({ error: error.name });
+  }
+});
+
+router.get('/publicRoles', JWTManager.verifyAdminUser, async (req, res) => {
+  try {
+    const data = await Role.findAll({where: {id : [4,5]}});
+    return res.send(data);
+  } catch (error) {
+    console.log(error);
+    return res.send({ error: error.name });
+  }
+});
+
 router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {

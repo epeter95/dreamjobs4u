@@ -151,6 +151,10 @@ router.post('/public/changePassword', async (req, res) => {
   }
 });
 
+router.get('/', JWTManager.verifySuperAdminUser, async (req, res) => {
+  await getAllUserForAdmin(req,res, [2,3,4,5]);
+});
+
 router.get('/adminUsers', JWTManager.verifySuperAdminUser, async (req, res) => {
   await getAllUserForAdmin(req,res, [2,3]);
 });

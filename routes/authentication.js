@@ -24,7 +24,7 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const data = await User.findOne({ where: {email: email} });
+        const data = await User.findOne({ where: {email: email}, include: Role });
         if(data){
             const isAuthenticated = await bcrypt.compare(password, data.password)
             if(!isAuthenticated){
@@ -35,7 +35,7 @@ router.post('/login', async (req, res) => {
             }
             const privateKey = fs.readFileSync(process.env.JWT_SECRET_KEY, 'utf8');
             const token = jwt.sign({ email: data.email, roleId: data.roleId }, privateKey, {algorithm: 'RS256'});
-            return res.send({token: token});
+            return res.send({token: token, roleHash: data.Role.publicKey});
         }else{
             res.send({error: 'Nem létező felhasználó!'})
         }

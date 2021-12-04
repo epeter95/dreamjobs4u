@@ -67,8 +67,9 @@ router.get('/public/getJobsByTokenWithAppliedUsers', async (req, res) => {
         }
         const userData = await User.findOne({ where: { email: email } });
         const data = await Job.findAll({
+            where: { userId: userData.id },
             include: [JobTranslation, { model: Category, include: CategoryTranslation }]
-        }, { where: { userId: userData.id } });
+        });
         let result = [];
         for (let i = 0; i < data.length; ++i) {
             const appliedUsers = await UserAppliedToJob.findAll({

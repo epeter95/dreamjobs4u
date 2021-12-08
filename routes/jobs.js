@@ -3,7 +3,7 @@ const router = express.Router();
 const { Job, JobTranslation, Language, User, Category, CategoryTranslation,
     Profile, UserAppliedToJob, AppliedUserStatus, AppliedUserStatusTranslation } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
-const FileManager = require('../middlewares/file_manager');
+const FileManager = require('../classes/file_manager');
 const Mailer = require('../classes/mailer');
 
 router.get('/public/getJobsByCategoryId/:id', async (req, res) => {

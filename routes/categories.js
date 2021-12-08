@@ -3,7 +3,7 @@ const router = express.Router();
 const { Category, CategoryTranslation, Language, Job } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 const Sequelize = require('sequelize');
-const FileManager = require('../middlewares/file_manager');
+const FileManager = require('../classes/file_manager');
 
 router.get('/public', async (req, res) => {
   try {

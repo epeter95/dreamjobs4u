@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Profile, User, Role, RoleTranslation } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
-const FileManager = require('../middlewares/file_manager');
+const FileManager = require('../classes/file_manager');
 
 router.get('/getProfileDataForPublic', async (req, res) => {
   try {

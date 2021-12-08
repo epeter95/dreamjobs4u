@@ -3,7 +3,7 @@ const router = express.Router();
 const { User, Role, Profile, Category, CategoryTranslation, UserAppliedToJob, Job } = require('../db/models');
 const bcrypt = require('bcrypt');
 const JWTManager = require('../middlewares/jwt_manager');
-const FileManager = require('../middlewares/file_manager');
+const FileManager = require('../classes/file_manager');
 const Mailer = require('../classes/mailer');
 
 router.get('/getDataForPublic', async (req, res) => {

@@ -1,6 +1,4 @@
 const fs = require('fs');
-const { User } = require('../db/models');
-const JWTManager = require('../middlewares/jwt_manager');
 
 class FileManager {
 

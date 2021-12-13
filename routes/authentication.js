@@ -4,11 +4,11 @@ const { User, Profile, Role } = require('../db/models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
-
+//paraméterként kapott jelszó hashelése bcrypt segítségével
 async function hashPassword(password) {
   return await bcrypt.hash(password, 10);
 }
-
+//publikus felületről regisztráció adatok megadásával és jelszó hasheléssel
 router.post('/register', async (req, res) => {
     try {
         const { firstName, lastName, email, password, roleId } = req.body;
@@ -20,7 +20,7 @@ router.post('/register', async (req, res) => {
         return res.send({ error: error.name });
       }
 });
-
+//adminisztratív felületről bejelentkezés email és jelszó alapján
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -45,7 +45,7 @@ router.post('/login', async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//publikus felületről bejelentkezés email és jelszó alapján
 router.post('/login/public', async (req, res) => {
     try {
         const { loginEmail, loginPassword } = req.body;

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { AppliedUserStatus, AppliedUserStatusTranslation, Language } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
-
+// adminisztratív jogosultsággal minden státusz fordítás lekérdezése
 router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const data = await AppliedUserStatusTranslation.findAll({
@@ -14,7 +14,7 @@ router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+// adminisztratív jogosultsággal egy státusz fordítás lekérdezése paraméterben megkapott azonosító alapján
 router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
@@ -30,7 +30,7 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+// adminisztratív jogosultsággal státusz fordítás létrehozása
 router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const { appliedUserStatusId, languageId, text } = req.body;
@@ -41,7 +41,7 @@ router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+// adminisztratív jogosultsággal státusz fordítás módosítása azonosító alapján
 router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
@@ -56,7 +56,7 @@ router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+// adminisztratív jogosultsággal státusz fordítás törlése azonosító alapján
 router.delete('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {

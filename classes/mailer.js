@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const fs = require('fs');
-
+//mail szerver adatainak megadása konfigurációs JSON objektumban
 const smtpConfig = {
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
@@ -15,10 +15,11 @@ const smtpConfig = {
     },
     tls: { rejectUnauthorized: false }
 };
-
+//transporter objektum létrehozása mail szerver konfigurációval
 var transporter = nodemailer.createTransport(smtpConfig);
 
 class Mailer {
+    //email küldés paraméterben megkapott feladótól, címzettnek, tárggyal, leírással, esetleges fájl csatolással
     static async sendMail(replyTo,mailTo,subject,mailContent, attachments, filePath){
         let mailOptions = {
             from: 'Sweat Jobs <'+process.env.SMTP_USER+'>',

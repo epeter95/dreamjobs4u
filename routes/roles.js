@@ -3,7 +3,7 @@ const router = express.Router();
 const { Role, RoleTranslation } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 const { Op } = require("sequelize");
-
+//kizárólag publikus jogosultságok visszaadása publikus felületnek fordításokkal
 router.get('/public', async (req, res) => {
   try {
     const data = await Role.findAll({
@@ -20,7 +20,7 @@ router.get('/public', async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal szerepkörök és fordításaik lekérdezése
 router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const data = await Role.findAll({ include: RoleTranslation });
@@ -30,7 +30,7 @@ router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal adminisztratív szerepkörök és fordításaik lekérdezése
 router.get('/adminRoles', JWTManager.verifySuperAdminUser, async (req, res) => {
   try {
     const data = await Role.findAll({where: {id : 3}});
@@ -40,7 +40,7 @@ router.get('/adminRoles', JWTManager.verifySuperAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal publikus szerepkörök lekérdezése
 router.get('/publicRoles', JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const data = await Role.findAll({where: {id : [4,5]}});
@@ -50,7 +50,7 @@ router.get('/publicRoles', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal egy szerepkör és fordításai lekérdezése
 router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
@@ -67,7 +67,7 @@ router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal egy szerepkör létrehozása
 router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const { key, adminName } = req.body;
@@ -78,7 +78,7 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal egy szerepkör módosítása
 router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
@@ -93,7 +93,7 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal egy szerepkör törlése
 router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {

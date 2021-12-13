@@ -5,7 +5,7 @@ const { Job, JobTranslation, Language, User, Category, CategoryTranslation,
 const JWTManager = require('../middlewares/jwt_manager');
 const FileManager = require('../classes/file_manager');
 const Mailer = require('../classes/mailer');
-
+//állások visszaadása kategória azonosító alapján fordítással, kategóriával és kategória fordítással
 router.get('/public/getJobsByCategoryId/:id', async (req, res) => {
     try {
         const categoryId = req.params.id;
@@ -18,7 +18,7 @@ router.get('/public/getJobsByCategoryId/:id', async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//facebook crawler metódushoz szükséges oldal megjelenítése og tagekkel
 router.get('/facebook/:jobId', async (req, res) => {
   try{
       const jobId = req.params.jobId;
@@ -32,7 +32,7 @@ router.get('/facebook/:jobId', async (req, res) => {
       return res.sendStatus(404);
   }
 });
-
+//állások lekérdezése fordítással, kategóriával és fordítással
 router.get('/public', async (req, res) => {
     try {
         const data = await Job.findAll({
@@ -44,12 +44,12 @@ router.get('/public', async (req, res) => {
         return res.send({ error: error });
     }
 });
-
+//állás lekérdezése azonosító alapján fordítással, kategóriával és fordítással, ownerrel és profiljával
 router.get('/public/getJobById/:id', async (req, res) => {
     try {
         let id = req.params.id;
         const data = await Job.findOne({
-            include: [JobTranslation, { model: Category, include: CategoryTranslation }, { model: User, include: Profile }],
+            include: [JobTranslation, { model: Category, include: CategoryTranslation }, { model: User, attributes: ['id','firstName', 'lastName','email'], include: Profile }],
             where: { id: id }
         });
         return res.send(data);
@@ -58,7 +58,7 @@ router.get('/public/getJobById/:id', async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//állások lekérdezése token alapján állásra jelentkezett felhasználókkal
 router.get('/public/getJobsByTokenWithAppliedUsers', async (req, res) => {
     try {
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
@@ -88,7 +88,7 @@ router.get('/public/getJobsByTokenWithAppliedUsers', async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//állás lekérdezése owner és id alapján
 router.get('/public/getJobByIdAndToken/:id', async (req, res) => {
     try {
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
@@ -106,7 +106,7 @@ router.get('/public/getJobByIdAndToken/:id', async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//állások legördülő menübe való lekérdezése, amelyek token alapján felhasználóhoz tartoznak
 router.get('/public/getJobDropdownDataByToken', async (req, res) => {
     try {
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
@@ -124,7 +124,7 @@ router.get('/public/getJobDropdownDataByToken', async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//felhasználó jelentkezett-e egy állásra annak eldöntése
 router.get('/public/isUserAppliedToJob/:id', async (req, res) => {
     try {
         const jobId = req.params.id;
@@ -143,7 +143,7 @@ router.get('/public/isUserAppliedToJob/:id', async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adott állásra jelentkezett felhasználó lekérdezése azonosító alapján
 router.get('/public/getAppliedUsersByJobId/:id', async (req, res) => {
     try {
         const jobId = req.params.id;
@@ -158,7 +158,7 @@ router.get('/public/getAppliedUsersByJobId/:id', async (req, res) => {
         return res.send({ error: error });
     }
 })
-
+//felhasználóhoz tartozó állások, amelyekre jelentkezett lekérdezése
 router.get('/public/getAppliedJobsByToken', async (req, res) => {
     try {
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
@@ -174,7 +174,7 @@ router.get('/public/getAppliedJobsByToken', async (req, res) => {
     }
 });
 
-
+//felhasználó lejelentkeztetése adott állásról
 router.post('/public/userRemoveFromJob', async (req, res) => {
     try {
         const { jobId } = req.body;
@@ -198,7 +198,7 @@ router.post('/public/userRemoveFromJob', async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//felhasználó feljelentkeztetése adott állásra
 router.post('/public/userApplyToJob', async (req, res) => {
     try {
         const { jobId } = req.body;
@@ -239,7 +239,7 @@ router.post('/public/userApplyToJob', async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//felhasználóhoz tartozó állás és fordításai létrehozása
 router.post('/public/createJob', async (req, res) => {
     try {
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
@@ -286,7 +286,7 @@ router.post('/public/createJob', async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//felhasználóhoz tartozó állás és fordításai módosítása
 router.put('/public/modifyJob/:id', async (req, res) => {
     try {
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
@@ -347,7 +347,7 @@ router.put('/public/modifyJob/:id', async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//felhasználóhoz tartozó állás és fordításai törlése
 router.delete('/public/deleteJob/:id', async (req, res) => {
     try {
         const paramId = req.params.id;
@@ -372,7 +372,7 @@ router.delete('/public/deleteJob/:id', async (req, res) => {
     }
     return res.send({ ok: 'siker' });
 });
-
+//adminisztratív jogosultsággal adminisztratív felületre állások és fordításai lekérdezése
 router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const data = await Job.findAll({
@@ -384,7 +384,7 @@ router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal adminisztratív felületre egy állás és fordításai lekérdezése
 router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
@@ -400,7 +400,7 @@ router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal adminisztratív felületre egy állás létrehozása magyar nyelvű fordítással
 router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const {
@@ -426,7 +426,7 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal adminisztratív felületre egy állás módosítása
 router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
@@ -450,7 +450,7 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal adminisztratív felületre egy állás és fordításai törlése
 router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {

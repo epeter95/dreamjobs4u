@@ -34,7 +34,7 @@ var contactRouter = require('./routes/contacts');
 var usersAppliedToJobsRouter = require('./routes/applied_users');
 var eventsRouter = require('./routes/events');
 //--------------------------------//
-
+//app init, szükséges külső alkalmazások használata
 var app = express();
 
 var cors = require('cors');
@@ -49,6 +49,7 @@ app.use(fileUpload());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+//statikus fájlok hostolása
 app.use(express.static(path.join(__dirname, 'public/users')));
 app.use(express.static(path.join(__dirname, 'public/categories')));
 

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { ErrorMessage, ErrorMessageTranslation, Language } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
-
+//jogosultság nélkül hibaüzenetek és fordítások lekérdezése
 router.get('/public', async (req, res) => {
   try {
     const data = await ErrorMessage.findAll({
@@ -14,7 +14,7 @@ router.get('/public', async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal egy hibaüzenet és fordítások lekérdezése
 router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const data = await ErrorMessage.findAll({ include: ErrorMessageTranslation });
@@ -24,7 +24,7 @@ router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal egy hibaüzenet és fordítások lekérdezése
 router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
@@ -41,7 +41,7 @@ router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal hibaüzenet létrehozása magyar fordítással
 router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const { key, adminName, text } = req.body;
@@ -54,7 +54,7 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal hibaüzenet módosítása
 router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
@@ -69,7 +69,7 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal hibaüzenet törlése, és hozzá tartozó fordítások törlése
 router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {

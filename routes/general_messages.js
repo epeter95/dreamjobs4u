@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { GeneralMessage, GeneralMessageTranslation, Language } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
-
+//publikus felületre általános üzenetek és fordításaik lekérdezése
 router.get('/public', async (req, res) => {
   try {
     const data = await GeneralMessage.findAll({
@@ -14,7 +14,7 @@ router.get('/public', async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal adminisztratív felületre általános üzenetek és fordításaik lekérdezése
 router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const data = await GeneralMessage.findAll({ include: GeneralMessageTranslation });
@@ -24,7 +24,7 @@ router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal adminisztratív felületre egy általános üzenet és fordításaik lekérdezése
 router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
@@ -41,7 +41,7 @@ router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal adminisztratív felületre általános üzenet létrehozása
 router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const { key, adminName, text } = req.body;
@@ -54,7 +54,7 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal adminisztratív felületre általános üzenet módosítása
 router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
@@ -69,7 +69,7 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal adminisztratív felületre általános üzenet törlése
 router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {

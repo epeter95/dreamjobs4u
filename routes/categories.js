@@ -4,7 +4,7 @@ const { Category, CategoryTranslation, Language, Job } = require('../db/models')
 const JWTManager = require('../middlewares/jwt_manager');
 const Sequelize = require('sequelize');
 const FileManager = require('../classes/file_manager');
-
+//publikus felületre kategóriák lekérdezése fordítással és állással
 router.get('/public', async (req, res) => {
   try {
     const data = await Category.findAll({
@@ -17,7 +17,7 @@ router.get('/public', async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív felületre kategóriák lekérdezése fordítással
 router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const data = await Category.findAll({ include: CategoryTranslation });
@@ -27,7 +27,7 @@ router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív felületre egy kategória lekérdezése fordítással azonosító alapján
 router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
@@ -44,7 +44,7 @@ router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal egy kategória és magyar fordítás létrehozása
 router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const { key, adminName, text } = req.body;
@@ -62,7 +62,7 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal egy kategória módosítása
 router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
@@ -86,7 +86,7 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//adminisztratív jogosultsággal egy kategória és hozzá tartozó fordítások és logo törlése
 router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {

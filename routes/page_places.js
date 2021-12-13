@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { PagePlace } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
-
+//oldal helyek lekérdezése adminisztratív jogosultsággal
 router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const data = await PagePlace.findAll({});
@@ -12,7 +12,7 @@ router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//oldal hely lekérdezése adminisztratív jogosultsággal azonosító alapján
 router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
@@ -28,7 +28,7 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//oldal hely létrehozása adminisztratív jogosultsággal
 router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const { key, adminName } = req.body;
@@ -40,7 +40,7 @@ router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//oldal hely módosítása adminisztratív jogosultsággal azonosító alapján
 router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
@@ -55,7 +55,7 @@ router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//oldal hely törlése adminisztratív jogosultsággal azonosító alapján
 router.delete('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {

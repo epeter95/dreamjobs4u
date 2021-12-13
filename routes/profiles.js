@@ -3,7 +3,7 @@ const router = express.Router();
 const { Profile, User } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 const FileManager = require('../classes/file_manager');
-
+//profil adatok visszaadása publikus felületnek token alapján
 router.get('/getProfileDataForPublic', async (req, res) => {
   try {
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
@@ -21,7 +21,7 @@ router.get('/getProfileDataForPublic', async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//profil adatok módosítása token alapján
 router.post('/public/modifyProfileData', async (req, res) => {
   try {
     const email = JWTManager.getEmailByToken(req.headers['authorization']);
@@ -57,7 +57,7 @@ router.post('/public/modifyProfileData', async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+//profilkép módosítása token alapján
 router.post('/public/editProfilePicture', async (req, res) => {
   try {
     const email = JWTManager.getEmailByToken(req.headers['authorization']);

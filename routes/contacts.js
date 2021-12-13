@@ -2,7 +2,7 @@ const express = require('express');
 const Mailer = require('../classes/mailer');
 const router = express.Router();
 const { PublicContent, PublicContentTranslation ,Language } = require('../db/models');
-
+//publikus felületről email küldése lábjegyzetből kinyert email címre, fájl csatolás nincs
 router.post('/sendMailFromContact', async (req, res) => {
     try {
         const { firstName, lastName, email, subject, message } = req.body;

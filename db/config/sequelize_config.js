@@ -1,6 +1,6 @@
 const dotenv = require("dotenv");
 dotenv.config();
-
+//adatbázis konfigurációk megadása környezeti változók, és egyéb konfigurációk megadásával
 module.exports = {
   development: {
     username: process.env.DB_USER,

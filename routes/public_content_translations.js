@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { PublicContentTranslation, PublicContent, Language, PagePlace } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
-
+// adminisztratív jogosultsággal publikus tartalom fordítások lekérdezése
 router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const data = await PublicContentTranslation.findAll({
@@ -14,7 +14,7 @@ router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+// adminisztratív jogosultsággal publikus tartalom fordítás lekérdezése
 router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
@@ -30,7 +30,7 @@ router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+// adminisztratív jogosultsággal publikus tartalom fordítás létrehozása
 router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const { publicContentId, languageId, title } = req.body;
@@ -41,7 +41,7 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+// adminisztratív jogosultsággal publikus tartalom fordítás módosítása
 router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
@@ -56,7 +56,7 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+// adminisztratív jogosultsággal publikus tartalom fordítás törlése
 router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
@@ -69,7 +69,7 @@ router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     }
     return res.send({ ok: 'siker' });
 });
-
+// adminisztratív jogosultsággal publikus tartalom fordítások létrehozása pagePlace key alapján
 router.get('/getByPagePlaceKey/:key', JWTManager.verifyAdminUser, async (req, res) => {
     var pagePlaceKeyParam = req.params.key;
     try {

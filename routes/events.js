@@ -3,7 +3,7 @@ const router = express.Router();
 const { Event, User, Job, JobTranslation, Profile } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 const Mailer = require('../classes/mailer');
-
+//esemény visszaadása felhasználóval és hozzátartozó profillal és állás+fordítással token alapján
 router.get('/public/getEventsByToken', async (req, res) => {
     try {
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
@@ -19,7 +19,7 @@ router.get('/public/getEventsByToken', async (req, res) => {
     }
 });
 
-
+//felhasználói azonosító visszaadása token alapján
 router.get('/public/getUserIdByToken', async (req, res) => {
     try {
         const email = JWTManager.getEmailByToken(req.headers['authorization']);
@@ -33,7 +33,7 @@ router.get('/public/getUserIdByToken', async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//felhaszálóhoz tartozó esemény visszaadása id alapján
 router.get('/public/getEventByToken/:id', async (req, res) => {
     try {
         const eventId = req.params.id;
@@ -49,7 +49,7 @@ router.get('/public/getEventByToken/:id', async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//esemény elindítása utáni link kiküldése vendégnek
 router.post('/public/sendLinkToUsers', async (req, res) => {
     try {
         const { eventId, pwdId, users } = req.body;
@@ -71,7 +71,7 @@ router.post('/public/sendLinkToUsers', async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//esemény létrehozása, majd esemény url címének küldése vendég felhasználónak
 router.post('/public/createEvent', async (req, res) => {
     try {
         const { jobId, users, startDate } = req.body;

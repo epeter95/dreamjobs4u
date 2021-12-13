@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 class FileManager {
-
+    //fájl feltöltés request file attribútumából, paraméterként megadott elérési útra, és opcionálisan először törlés segítségével
     static async handleFileUpload(req, directoryPath, directoryName, fileAttribute, isDeleteNeeded) {
         let imageUrlString = '';
         if (req.files && req.files[fileAttribute]) {
@@ -24,7 +24,7 @@ class FileManager {
         }
         return imageUrlString;
     }
-
+    //ideiglenesen fájl létrehozása alkalmazás struktúrában
     static createFileTmp(req, attribute){
         let tmpPath = '';
         if (req.files && req.files[attribute]) {
@@ -34,12 +34,12 @@ class FileManager {
         } 
         return tmpPath;
     }
-
+    //fájl felolvasása alkalmazás könyvtárból url alapján
     static readFile(url){
         const file = fs.readFileSync(url)
         return file;
     }
-
+    //fájl törlése alkalmazás könyvtárból url alapján
     static deleteFile(url){
         fs.rmSync( url, { recursive: true, force: true });
     }

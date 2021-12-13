@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { PublicContent, PagePlace, Language, PublicContentTranslation } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
-
+// adminisztratív jogosultsággal publikus tartalmak lekérdezése fordításaival és oldal hellyel
 router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const data = await PublicContent.findAll({
@@ -14,7 +14,7 @@ router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+// adminisztratív jogosultsággal egy publikus tartalom lekérdezése fordításaival és oldal hellyel
 router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
@@ -33,7 +33,7 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+// adminisztratív jogosultsággal egy publikus tartalom létrehozása magyar fordítással
 router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const { key, adminName, pagePlaceId, title } = req.body;
@@ -46,7 +46,7 @@ router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+// adminisztratív jogosultsággal egy publikus tartalom módosítása
 router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
@@ -61,7 +61,7 @@ router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     return res.send({ error: error.name });
   }
 });
-
+// adminisztratív jogosultsággal egy publikus tartalom törlése
 router.delete('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
@@ -74,7 +74,7 @@ router.delete('/:id',JWTManager.verifyAdminUser, async (req, res) => {
   }
   return res.send({ ok: 'siker' });
 });
-
+// adminisztratív jogosultsággal publikus tartalmak lekérdezése fordításaival, és oldalhellyel pagePlace key alapján
 router.get('/getByPagePlaceKey/:key', JWTManager.verifyAdminUser,  async(req, res) => {
   var pagePlaceKeyParam = req.params.key;
   try {
@@ -92,7 +92,7 @@ router.get('/getByPagePlaceKey/:key', JWTManager.verifyAdminUser,  async(req, re
     return res.send({error: error.name});
   }
 });
-
+// nincs jogosultság publikus tartalmak lekérdezése fordításaival, és oldalhellyel pagePlace key alapján
 router.get('/getByPagePlaceKey/:key/public',  async(req, res) => {
   var pagePlaceKeyParam = req.params.key;
   try {

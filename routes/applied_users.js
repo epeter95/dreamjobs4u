@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { UserAppliedToJob, Job, User, AppliedUserStatus } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
-
+//adminisztratív jogosultsággal állásra jelentkezett összes felhasználó lekérdezése állással, felhasználóval, és státusszal
 router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const data = await UserAppliedToJob.findAll({ include: [Job, User, AppliedUserStatus] });
@@ -12,7 +12,7 @@ router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal állásra jelentkezett egy felhasználó lekérdezése állással, felhasználóval, és státusszal azonosító alapján
 router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
@@ -29,7 +29,7 @@ router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal állásra jelentkezett felhasználó létrehozása
 router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const { userId, jobId, appliedUserStatusId } = req.body;
@@ -40,7 +40,7 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal állásra jelentkezett felhasználó módosítása
 router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
@@ -55,7 +55,7 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal állásra jelentkezett felhasználó törlése
 router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {

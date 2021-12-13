@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { LanguageTranslation, Language } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
-
+//adminisztratív jogosultsággal nyelv fordítások lekérdezése
 router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const data = await LanguageTranslation.findAll({
@@ -14,7 +14,7 @@ router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal nyelv fordítás lekérdezése
 router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
@@ -30,7 +30,7 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal nyelv fordítás létrehozása
 router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const { languageElementId, languageId, name } = req.body;
@@ -41,7 +41,7 @@ router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal nyelv fordítás módosítása
 router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
@@ -56,7 +56,7 @@ router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal nyelv fordítás törlése
 router.delete('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {

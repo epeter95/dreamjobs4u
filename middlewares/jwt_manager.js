@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 
 class JWTManager {
+    // admin jogú felhasználói authorizációra szükséges ellenőrzés JWT-vel és RSA publikus kulccsal
     static verifyAdminUser(req, res, next) {
         try {
             const authHeader = req.headers['authorization'];
@@ -19,7 +20,7 @@ class JWTManager {
             return res.send(ex);
         }
     }
-
+    // szuper admin jogú felhasználói authorizációra szükséges ellenőrzés JWT-vel és RSA publikus kulccsal
     static verifySuperAdminUser(req, res, next) {
         try {
             const authHeader = req.headers['authorization'];
@@ -36,7 +37,7 @@ class JWTManager {
             return res.send(ex);
         }
     }
-
+    //email cím kinyerése felhasználói tokenből
     static getEmailByToken(header) {
         const authHeader = header;
         const token = authHeader && authHeader.split(' ')[1];

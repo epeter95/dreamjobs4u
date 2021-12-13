@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { AppliedUserStatus, AppliedUserStatusTranslation, Language } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
-
+// jogosultság nélkül minden státusz lekérdezése
 router.get('/public', async (req, res) => {
     try {
         const data = await AppliedUserStatus.findAll({ include: AppliedUserStatusTranslation });
@@ -12,7 +12,7 @@ router.get('/public', async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+// adminisztratív jogosultsággal minden státusz lekérdezése
 router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const data = await AppliedUserStatus.findAll({ include: AppliedUserStatusTranslation });
@@ -22,7 +22,7 @@ router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+// adminisztratív jogosultsággal egy státusz lekérdezése paraméterben megkapott azonosító alapján
 router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
@@ -39,7 +39,7 @@ router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+// adminisztratív jogosultsággal státusz és magyar fordítás létrehozása
 router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const { key, adminName, text } = req.body;
@@ -52,7 +52,7 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+// adminisztratív jogosultsággal státusz módosítása azonosító alapján
 router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
@@ -67,7 +67,7 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+// adminisztratív jogosultsággal törlése azonosító alapján, minden fordítás törlődik
 router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {

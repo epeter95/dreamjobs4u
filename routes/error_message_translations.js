@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { ErrorMessageTranslation, ErrorMessage, Language } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
-
+//adminisztratív jogosultsággal hibaüzenetek fordítások lekérdezése hibaüzenet és nyelv includeal
 router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const data = await ErrorMessageTranslation.findAll({
@@ -14,7 +14,7 @@ router.get('/',JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal egy hibaüzenet fordítások lekérdezése hibaüzenet és nyelv includeal
 router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
@@ -30,7 +30,7 @@ router.get('/:id',JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal hibaüzenet fordítások létrehozása
 router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const { errorMessageId, languageId, text } = req.body;
@@ -41,7 +41,7 @@ router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal hibaüzenet fordítások módosítása
 router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
@@ -56,7 +56,7 @@ router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
         return res.send({ error: error.name });
     }
 });
-
+//adminisztratív jogosultsággal hibaüzenet fordítások törlése
 router.delete('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {

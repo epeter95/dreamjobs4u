@@ -409,10 +409,12 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
             payment, jobType, experience, qualification, categoryId,
             language
         } = req.body;
-        const directoryName = userId + '/jobs/' + req.params.id;
+        const data = await Job.create({ userId, companyName, jobLocation, companyWebsite, categoryId, showOnMainPage: showOnMainPage == '' ? false : true });
+        const directoryName = userId + '/jobs/' + data.id;
         const directoryRoot = './public/users/' + directoryName;
         const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'logoUrl');
-        const data = await Job.create({ userId, companyName, logoUrl: imageUrlString, jobLocation, companyWebsite, categoryId, showOnMainPage: showOnMainPage == '' ? false : true });
+        data.logoUrl = imageUrlString;
+        data.save();
         const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         const translationData = await JobTranslation.create({
             jobId: data.id, languageId: hunLanguage.id, title,

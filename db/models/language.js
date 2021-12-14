@@ -20,7 +20,8 @@ module.exports = (sequelize, DataTypes) => {
       unique: true
     },
     adminName: DataTypes.STRING,
-    active: DataTypes.BOOLEAN
+    active: DataTypes.BOOLEAN,
+    flagUrl: DataTypes.STRING
   }, {
     sequelize,
     tableName: 'languages',

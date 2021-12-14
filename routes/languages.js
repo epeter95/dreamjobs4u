@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Language, LanguageTranslation } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
+const FileManager = require('../classes/file_manager');
 //publikus felület számára nyelvek és fordításaik lekérdezése
 router.get('/public', async (req, res) => {
     try {
@@ -47,6 +48,11 @@ router.post('/',JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const { key, active, adminName, name } = req.body;
         const data = await Language.create({ key, adminName, active: active ? true : false });
+        const directoryName = 'languages/' + data.id;
+        const directoryRoot = './public/languages/' + directoryName;
+        const flagUrl = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'flagUrl');
+        data.flagUrl = flagUrl;
+        data.save();
         const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         const translationData = await LanguageTranslation.create({ languageElementId: data.id, languageId: hunLanguage.id, name });
         return res.send({ ok: 'siker' });
@@ -60,7 +66,10 @@ router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
         const { key, adminName, active } = req.body;
-        const data = await Language.update({ key, adminName, active }, {
+        const directoryName = 'languages/' + paramId;
+        const directoryRoot = './public/languages/' + directoryName;
+        const flagUrl = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'flagUrl');
+        const data = await Language.update({ key, adminName, active, flagUrl }, {
             where: { id: paramId },
         });
 
@@ -74,6 +83,9 @@ router.put('/:id',JWTManager.verifyAdminUser, async (req, res) => {
 router.delete('/:id',JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
+        const directoryName = 'languages/' + paramId;
+        const directoryRoot = './public/languages/' + directoryName;
+        FileManager.deleteFile(directoryRoot);
         const data = await Language.destroy({
             where: { id: paramId }
         });

@@ -101,8 +101,8 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
 router.delete('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
-    const directoryName = data.id;
-    const directoryRoot = './public/categories/' + directoryName;
+    const directoryName = 'categories/'+paramId;
+    const directoryRoot = './public/' + directoryName;
     FileManager.deleteFile(directoryRoot);
     const data = await Category.destroy({
       where: { id: paramId }

@@ -20,17 +20,17 @@ router.get('/public/getJobsByCategoryId/:id', async (req, res) => {
 });
 //facebook crawler metódushoz szükséges oldal megjelenítése og tagekkel
 router.get('/facebook/:jobId', async (req, res) => {
-  try{
-      const jobId = req.params.jobId;
-      const job = await Job.findOne({where:{id: jobId}, attributes: ['companyName', 'logoUrl', 'jobLocation'], include: [JobTranslation, Category]});
-      const selectedLanguage = job.JobTranslations.find(element=>element.languageId == 1);
-      console.log(selectedLanguage);
-      let description = job.companyName+ ' '+ job.jobLocation;
-      const shareUrl = 'https://sweetjobs.herokuapp.com/kategoria/' + job.Category.id+'/allas/'+jobId;
-      return res.render('index', { shareUrl: shareUrl , title: selectedLanguage.title, url: 'https://' + req.headers.host + '/api/jobs/facebook/' + jobId, description: description, image: job.logoUrl });
-  }catch(error){
-      return res.sendStatus(404);
-  }
+    try {
+        const jobId = req.params.jobId;
+        const job = await Job.findOne({ where: { id: jobId }, attributes: ['companyName', 'logoUrl', 'jobLocation'], include: [JobTranslation, Category] });
+        const selectedLanguage = job.JobTranslations.find(element => element.languageId == 1);
+        console.log(selectedLanguage);
+        let description = job.companyName + ' ' + job.jobLocation;
+        const shareUrl = 'https://sweetjobs.herokuapp.com/kategoria/' + job.Category.id + '/allas/' + jobId;
+        return res.render('index', { shareUrl: shareUrl, title: selectedLanguage.title, url: 'https://' + req.headers.host + '/api/jobs/facebook/' + jobId, description: description, image: job.logoUrl });
+    } catch (error) {
+        return res.sendStatus(404);
+    }
 });
 //állások lekérdezése fordítással, kategóriával és fordítással
 router.get('/public', async (req, res) => {
@@ -49,7 +49,7 @@ router.get('/public/getJobById/:id', async (req, res) => {
     try {
         let id = req.params.id;
         const data = await Job.findOne({
-            include: [JobTranslation, { model: Category, include: CategoryTranslation }, { model: User, attributes: ['id','firstName', 'lastName','email'], include: Profile }],
+            include: [JobTranslation, { model: Category, include: CategoryTranslation }, { model: User, attributes: ['id', 'firstName', 'lastName', 'email'], include: Profile }],
             where: { id: id }
         });
         return res.send(data);
@@ -166,7 +166,7 @@ router.get('/public/getAppliedJobsByToken', async (req, res) => {
             return res.sendStatus(403);
         }
         const userData = await User.findOne({ where: { email: email } });
-        const appliedJobs = await UserAppliedToJob.findAll({ where: { userId: userData.id }, include: [{ model: Job, include: [JobTranslation, { model: Category, include: CategoryTranslation }]}, {model: AppliedUserStatus, include: AppliedUserStatusTranslation} ]});
+        const appliedJobs = await UserAppliedToJob.findAll({ where: { userId: userData.id }, include: [{ model: Job, include: [JobTranslation, { model: Category, include: CategoryTranslation }] }, { model: AppliedUserStatus, include: AppliedUserStatusTranslation }] });
         return res.send(appliedJobs);
     } catch (error) {
         console.log(error);
@@ -376,7 +376,7 @@ router.delete('/public/deleteJob/:id', async (req, res) => {
 router.get('/', JWTManager.verifyAdminUser, async (req, res) => {
     try {
         const data = await Job.findAll({
-            include: [JobTranslation, User]
+            include: [JobTranslation,Category, User]
         });
         return res.send(data);
     } catch (error) {
@@ -391,7 +391,7 @@ router.get('/:id', JWTManager.verifyAdminUser, async (req, res) => {
         let data;
         if (paramId) {
             data = await Job.findOne({
-                where: { id: paramId },
+                where: { id: paramId },include: [JobTranslation ,Category]
             });
         }
         return res.send(data);
@@ -406,13 +406,13 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
         const {
             userId, companyName, companyWebsite,
             jobLocation, title, aboutUs, jobDescription, showOnMainPage,
-            payment, jobType, experience, qualification,
+            payment, jobType, experience, qualification, categoryId,
             language
         } = req.body;
         const directoryName = userId + '/jobs/' + req.params.id;
         const directoryRoot = './public/users/' + directoryName;
         const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'logoUrl');
-        const data = await Job.create({ userId, companyName, logoUrl: imageUrlString, jobLocation, companyWebsite, showOnMainPage });
+        const data = await Job.create({ userId, companyName, logoUrl: imageUrlString, jobLocation, companyWebsite, categoryId, showOnMainPage: showOnMainPage == '' ? false : true });
         const hunLanguage = await Language.findOne({ where: { key: process.env.DEFAULT_LANGUAGE_KEY } });
         const translationData = await JobTranslation.create({
             jobId: data.id, languageId: hunLanguage.id, title,
@@ -430,16 +430,16 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
 router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
     const paramId = req.params.id;
     try {
-        const { userId, companyName, companyWebsite, jobLocation, showOnMainPage } = req.body;
+        const { userId, companyName, companyWebsite, jobLocation, showOnMainPage, categoryId } = req.body;
         const directoryName = userId + '/jobs/' + req.params.id;
         const directoryRoot = './public/users/' + directoryName;
         const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'logoUrl');
         if (imageUrlString) {
-            const data = await Job.update({ userId, companyName, companyWebsite, logoUrl: imageUrlString, jobLocation, showOnMainPage }, {
+            const data = await Job.update({ userId, companyName,categoryId, companyWebsite, logoUrl: imageUrlString, jobLocation, showOnMainPage }, {
                 where: { id: paramId },
             });
         } else {
-            const data = await Job.update({ userId, companyName, companyWebsite, jobLocation, showOnMainPage }, {
+            const data = await Job.update({ userId, companyName,categoryId, companyWebsite, jobLocation, showOnMainPage }, {
                 where: { id: paramId },
             });
         }

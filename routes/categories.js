@@ -3,6 +3,7 @@ const router = express.Router();
 const { Category, CategoryTranslation, Language, Job } = require('../db/models');
 const JWTManager = require('../middlewares/jwt_manager');
 const Sequelize = require('sequelize');
+const { Op } = require("sequelize");
 const FileManager = require('../classes/file_manager');
 //publikus felületre kategóriák lekérdezése fordítással és állással
 router.get('/public', async (req, res) => {
@@ -11,6 +12,16 @@ router.get('/public', async (req, res) => {
       include: [CategoryTranslation,Job]
         
     });
+    return res.send(data);
+  } catch (error) {
+    console.log(error);
+    return res.send({ error: error.name });
+  }
+});
+//adminisztratív felületre kategóriák minden kategória nélkül
+router.get('/jobDropdownCategories', JWTManager.verifyAdminUser, async (req, res) => {
+  try {
+    const data = await Category.findAll({ where:{key: {[Op.not]:'allCategory'} },include: CategoryTranslation });
     return res.send(data);
   } catch (error) {
     console.log(error);

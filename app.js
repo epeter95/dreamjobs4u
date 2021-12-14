@@ -50,9 +50,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 //statikus fájlok hostolása
-app.use(express.static(path.join(__dirname, 'public/languages')));
-app.use(express.static(path.join(__dirname, 'public/users')));
-app.use(express.static(path.join(__dirname, 'public/categories')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 

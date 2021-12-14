@@ -60,8 +60,8 @@ router.post('/', JWTManager.verifyAdminUser, async (req, res) => {
   try {
     const { key, adminName, text } = req.body;
     const data = await Category.create({ key, adminName });
-    const directoryName = data.id;
-    const directoryRoot = './public/categories/' + directoryName;
+    const directoryName = 'categories/'+ data.id;
+    const directoryRoot = './public/' + directoryName;
     const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'pictureUrl');
     data.pictureUrl = imageUrlString;
     data.save();
@@ -78,8 +78,8 @@ router.put('/:id', JWTManager.verifyAdminUser, async (req, res) => {
   const paramId = req.params.id;
   try {
     const { key, adminName } = req.body;
-    const directoryName = paramId;
-    const directoryRoot = './public/categories/' + directoryName;
+    const directoryName = 'categories/'+paramId;
+    const directoryRoot = './public/' + directoryName;
     const imageUrlString = await FileManager.handleFileUpload(req, directoryRoot, directoryName, 'pictureUrl');
     if(imageUrlString){
       const data = await Category.update({ key, adminName, pictureUrl: imageUrlString }, {

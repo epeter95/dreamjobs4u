@@ -87,7 +87,7 @@ router.post('/public/createEvent', async (req, res) => {
         await data.setUsers([]);
         for (let i = 0; i < users.length; ++i) {
             const userRow = await User.findOne({ where: { id: users[i] } });
-            const message = 'Tisztelt ' + userRow.lastName + ' ' + userRow.firstName + '. Ezúton értesítjük, hogy ' + startDate + ' időpontban esemény meghívást kapott. Amint elindult a videóhívás, emailben értesítjük a szükséges további teendőkről. Az esemény a következő címen lesz elérhető: <br> https://sweetjobs.herokuapp.com/video-esemeny/' + link
+            const message = 'Tisztelt ' + userRow.lastName + ' ' + userRow.firstName + '. Ezúton értesítjük, hogy ' + startDate + ' időpontban esemény meghívást kapott. Amint elindult a videóhívás, emailben értesítjük a szükséges további teendőkről. Az esemény a következő címen lesz elérhető: <br> '+process.env.FRONTEND_DOMAIN_NAME+'/video-esemeny/' + link
             await Mailer.sendMail(email, userRow.email, 'Esemény (' + link + ')re való meghívás', message, [], '');
             await data.addUser(userRow);
         }

@@ -256,6 +256,7 @@ router.delete('/publicUsers/:id', JWTManager.verifyAdminUser, async (req, res) =
 async function deleteUser(req,res){
   const paramId = req.params.id;
   try {
+    FileManager.deleteFile('./public/users/'+paramId);
     const data = await User.destroy({
       where: { id: paramId }
     });

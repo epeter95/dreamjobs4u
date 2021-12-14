@@ -227,11 +227,11 @@ router.post('/public/userApplyToJob', async (req, res) => {
         const toEmail = jobRow.User.email;
         const huTranslation = jobRow.JobTranslations.find(element => element.languageId == huLanguage.id);
         const mailSubject = 'Az ' + huTranslation.title + ' állásra ' + userRow.firstName + ' ' + userRow.lastName + ' nevű felhasználó jelentkezett';
-        const mailMessage = 'Ha a felhasználónak van feltöltött önéletrajza, a csatlományok között megtalálja, ha nincs, vegye fel vele a kapcsolatot emailben, vagy nézze meg oldalunkon az adatait további információért.'
+        const mailMessage = 'Ha a felhasználónak van feltöltött önéletrajza, a csatolmányok között megtalálja, ha nincs, vegye fel vele a kapcsolatot emailben, vagy nézze meg oldalunkon az adatait további információért.'
         if (fileUrl) {
             await Mailer.sendMail(fromEmail, toEmail, mailSubject, mailMessage, [{ filename: fileName, path: fileUrl, contentType: 'application/pdf' }]);
         } else {
-            await Mailer.sendMail(fromEmail, toEmail, mailSubject, mailMessage, [{ filename: fileName, path: fileUrl, contentType: 'application/pdf' }]);
+            await Mailer.sendMail(fromEmail, toEmail, mailSubject, mailMessage);
         }
         return res.send({ status: 'ok' });
     } catch (error) {

@@ -29,9 +29,11 @@ class Mailer {
             replyTo: replyTo
         }
         console.log('no');
-        if(attachments.length > 0){
-            console.log('yea');
-            mailOptions['attachments'] = attachments;
+        if(attachments){
+            if(attachments.length > 0){
+                console.log('yea');
+                mailOptions['attachments'] = attachments;
+            }
         }
         transporter.sendMail(mailOptions, function(error, info){
             if (error) {
